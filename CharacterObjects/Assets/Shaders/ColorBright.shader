@@ -40,7 +40,7 @@
                     float greyscale = tex2D(_MainTex, IN.uv).rg;
                
                 // RESULT
-                    float4 result;
+//                    float4 result;
 //
 //                    result.rgb = tex2D(_ColorRamp, float2(greyscale, 0.5)).rgb;
 //                    result.a = tex2D(_MainTex, IN.uv).a;
