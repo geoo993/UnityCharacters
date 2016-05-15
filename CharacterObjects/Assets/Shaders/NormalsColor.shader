@@ -1,4 +1,4 @@
-﻿Shader ".ShaderExample/ObjectNormalsAsColours"
+﻿Shader ".ShaderExample/NormalsColor"
 {
 	Properties
 	{
