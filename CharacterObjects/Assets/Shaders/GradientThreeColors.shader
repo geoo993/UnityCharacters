@@ -1,5 +1,5 @@
 ﻿
-Shader ".ShaderExample/GradientColor" {
+Shader ".ShaderExample/GradientThreeColor" {
 
      Properties {
          [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}

@@ -1,6 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO; // Used for writing PNG textures to disk
+
+public static class GradientToTexture{
+	
+	public static Texture2D ToTexture(this Gradient aGradient,int width)
+	{
+		if (width < 1)
+			throw new System.ArgumentException("aWidth has to be 1 or greater");
+		var colors = new Color[width];
+		float denominator = Mathf.Max(1, width - 1);
+		for(int i = 0; i < width; i++)
+		{
+			colors[i] = aGradient.Evaluate((float)i / denominator);
+		}
+		var tex = new Texture2D(width, 1);
+		tex.SetPixels(colors);
+		tex.Apply();
+		return tex;
+	}
+
+}
+
 
 public class GradientTexture : MonoBehaviour {
 
@@ -11,53 +33,21 @@ public class GradientTexture : MonoBehaviour {
 	private Texture2D texture;
 	private Color color = Color.blue;
 
-	[Range(2, 36)] public float frequency = 16f;
-	[Range(1, 8)] public int octaves = 1;
-	[Range(1f, 4f)] public float lacunarity = 2f;
-	[Range(0f, 1f)] public float persistence = 0.5f;
-	[Range(1, 3)] public int dimensions = 3;
 	public Gradient gradientColor = new Gradient();
 
-	List<Vector2[]> pixelsPoints = new List<Vector2[]>();
-	List <Color> interpolateColorsA = new List<Color>();
-	List <Color> interpolateColorsB = new List<Color>();
-	List <Color> interpolateComplete = new List<Color>();
+	private Cubemap cubemap;
 
-	Color[] colors = new Color[]
-	{
-		Color.red, 
-		Color.yellow, 
-		Color.green, 
-		//Color.blue,
-		Color.cyan,
-		//Color.gray,
-		//Color.magenta,
-		//Color.black,
-		Color.white
-	};
 	//private void Awake () {
 	private void OnEnable () {
 
 		renderer = GetComponent<MeshRenderer> ();
 
-		if (texture == null) {
-
-
-			// new Texture2D (width , heigth, TextureFormat: format, bool : mipmap)
-			texture = new Texture2D (resolution, resolution, TextureFormat.RGB24, false);
-			//texture = new Texture2D(resolution, resolution, TextureFormat.ARGB32, false);
-			texture.name = "Procedural Texture";
-
-			texture.wrapMode = TextureWrapMode.Clamp;
-			texture.filterMode = FilterMode.Trilinear;//FilterMode.Bilinear; //FilterMode.Point;
-			texture.anisoLevel = 9;
-
-			renderer.material.mainTexture = texture;
-		}
 	
 			//FillTexture ();
-		
+		//CreateCubeMap();
 	}
+
+
 	private void Update () {
 
 		if (transform.hasChanged) {
@@ -92,73 +82,180 @@ public class GradientTexture : MonoBehaviour {
 	public void FillTexture () {
 
 
-		if (texture.width != resolution) {
-			texture.Resize(resolution, resolution);
-		}
+		if (texture == null) {
 
 			renderer.material.mainTexture = null;
 
-			texture = new Texture2D (resolution, resolution, TextureFormat.RGB24, false);
+			cubemap = new Cubemap(resolution, TextureFormat.ARGB32, false);
+
+			texture = new Texture2D (cubemap.width, cubemap.height, TextureFormat.RGB24, false);
+			//texture = new Texture2D (resolution, resolution, TextureFormat.RGB24, false);
 			texture.name = "gradientTexture";
 
 			texture.wrapMode = TextureWrapMode.Clamp;
 			texture.filterMode = FilterMode.Trilinear;//FilterMode.Bilinear; //FilterMode.Point;
 			texture.anisoLevel = 9;
 
+			addGradient (gradientColor);
+			texture = gradientColor.ToTexture (resolution);
+
+			//renderer.material.mainTexture = texture;
+
+
+			CubemapFace[] faces = new CubemapFace[] {
+				CubemapFace.PositiveX, CubemapFace.NegativeX,
+				CubemapFace.PositiveY, CubemapFace.NegativeY,
+				CubemapFace.PositiveZ, CubemapFace.NegativeZ };
+
+			foreach (CubemapFace face in faces) {
+				texture.SetPixels(cubemap.GetPixels(face));        
+				cubemap.Apply ();
+				File.WriteAllBytes(Application.dataPath + "/" + cubemap.name + "_" + face.ToString() + ".png", texture.EncodeToPNG());
+			}   
+
+
+			//Material mat = new Material (Shader.Find ("Skybox/Cubemap"));
+			Material mat = new Material (Shader.Find (".ShaderExample/ScreenScapeGradient"));
+			//cubemap = Resources.Load ("ClearSkyRadiance") as Cubemap;
+			mat.SetTexture("_MainTex",texture);
+
+			renderer.material = mat;
+			cubemap.Apply ();
+
 		
-			//the local coordinates of a quad with center (0,0)
-			Vector3 point00 = transform.TransformPoint (new Vector3 (-0.5f, -0.5f, 0f));
-			Vector3 point10 = transform.TransformPoint (new Vector3 (0.5f, -0.5f, 0f));
-			Vector3 point01 = transform.TransformPoint (new Vector3 (-0.5f, 0.5f, 0f));
-			Vector3 point11 = transform.TransformPoint (new Vector3 (0.5f, 0.5f, 0f));
-
-			float stepSize = 1f / resolution;
-			//Random.seed = 42;
-
-			for (int y = 0; y < resolution; y++) {
-
-				////interpolate between the bottom left and top left corner based on y
-				Vector3 point0 = Vector3.Lerp (point00, point01, (y + 0.5f) * stepSize);
-
-				////interpolate between the bottom right and top right corner based on x
-				Vector3 point1 = Vector3.Lerp (point10, point11, (y + 0.5f) * stepSize);	
+		}
 
 
-				for (int x = 0; x < resolution; x++) {
-
-					////use bilinear interpolation to find the final point, which we directly convert into a color.
-					Vector3 point = Vector3.Lerp (point0, point1, (x + 0.5f) * stepSize);
-
-					//color = ((x & y) != 0 ? Color.white : Color.gray);  //// pattern 0
-					//color = new Color(x * stepSize, y * stepSize, 0f);   //// pattern 1
-					//color = new Color((x + 0.5f) * stepSize, (y + 0.5f) * stepSize, 0f);   //// pattern 2
-					//color = new Color((x + 0.5f) * stepSize % 0.1f, (y + 0.5f) * stepSize % 0.1f, 0f) * 10f;  //// pattern 3 //// Repeating the pattern.
-					Vector3 pattern2 = new Vector3 ((x + 0.5f) * stepSize, (y + 0.5f) * stepSize, 0f);
-
-					//color = new Color(point.x, point.y, point.z);
-
-					color = Color.white * Random.value; ////  noise
-					//color = Color.white * method(point,frequency,true); //// pseudorandom noise  and Perlin Noise
 
 
-					//color = addGradient (gradientColor);
-
-
-					////each pixel psotion and color given
-					texture.SetPixel (x, y, color);
-
-
-				}
-			}
-			
-
-			//// Apply all SetPixel calls
-			texture.Apply();
-
-			renderer.material.mainTexture = texture;
-		
 
 	}
 		
+
+
+	// This is the coroutine that creates the cubemap images
+	void CreateCubeMap()
+	{
+		// Initialise a new cubemap
+		Cubemap cm = new Cubemap(resolution, TextureFormat.RGB24, true);
+
+		// Disable any renderers attached to this object which may get in the way of our camera
+		if(GetComponent<Renderer>()) {
+			GetComponent<Renderer>().enabled = false;
+		}
+
+		// Face render order: Top, Right, Front, Bottom, Left, Back
+		Quaternion[] rotations = { Quaternion.Euler(-90,0,0), Quaternion.Euler(0,90,0), Quaternion.Euler(0,0,0), Quaternion.Euler(90,0,0), Quaternion.Euler(0,-90,0), Quaternion.Euler(0,180,0)};
+		CubemapFace[] faces = { CubemapFace.PositiveY, CubemapFace.PositiveX, CubemapFace.PositiveZ, CubemapFace.NegativeY, CubemapFace.NegativeX, CubemapFace.NegativeZ };
+
+		// Create a single face matching the settings of the cubemap itself
+		Texture2D face = new Texture2D(resolution, resolution, TextureFormat.RGB24, true);
+
+		face.name = "gradientTexture";
+		// Use this to prevent white borders around edge of texture
+		face.wrapMode = TextureWrapMode.Clamp;
+
+		face.filterMode = FilterMode.Trilinear;//FilterMode.Bilinear; //FilterMode.Point;
+		face.anisoLevel = 9;
+
+		addGradient (gradientColor);
+		face = gradientColor.ToTexture (resolution);
+
+		//renderer.material.mainTexture = texture;
+
+
+		//		// Loop through and create each face
+		for(int i = 0; i < 6; i++) {
+			
+		
+			face = Resize(face, resolution, resolution);
+			// Flip the image across the x axis
+			face = Flip(face);
+			// Retrieve the pixelarray of colours for the current face
+			Color[] faceColours = face.GetPixels();
+			// Set the current cubemap face
+			cm.SetPixels(faceColours, faces[i], 0);
+			// Save the texture
+			SaveTextureToFile(face, gameObject.name + "_" + faces[i].ToString() + ".png");
+		}
+		// Apply the SetPixel changes to the cubemap faces to make them take effect     
+		cm.Apply();
+
+		//		// Assign the cubemap to the _Cube texture of this object's material
+			if(GetComponent<Renderer>().material.HasProperty("_Cube")) {
+				GetComponent<Renderer>().material.SetTexture("_Cube", cm);
+			}
+	
+			// Cleanup
+			DestroyImmediate(face);
+			//DestroyImmediate(cam);
+	
+			// Re-enable the renderer
+			if(renderer) {
+				GetComponent<Renderer>().enabled = true;
+			}
+}
+
+
+	private Texture2D CaptureScreen() {
+		Texture2D result;
+		Rect captureZone = new Rect( 0f, 0f, Screen.width, Screen.height );
+		result = new Texture2D( Mathf.RoundToInt(captureZone.width), Mathf.RoundToInt(captureZone.height), TextureFormat.RGB24, false);
+		result.ReadPixels(captureZone, 0, 0, false);
+		result.Apply();
+		return result;
+	}
+
+	// Save a Texture2D as a PNG file
+	// http://answers.unity3d.com/questions/245600/saving-a-png-image-to-hdd-in-standalone-build.html
+	private void SaveTextureToFile(Texture2D texture, string fileName) {
+		byte[] bytes = texture.EncodeToPNG();
+		FileStream file = File.Open(Application.dataPath + "/" + fileName,FileMode.Create);
+		BinaryWriter binary = new BinaryWriter(file);
+		binary.Write(bytes);
+		file.Close();
+	}
+
+	// Resize a Texture2D
+	// http://docs-jp.unity3d.com/Documentation/ScriptReference/Texture2D.GetPixelBilinear.html
+	Texture2D Resize(Texture2D sourceTex, int Width, int Height) {
+		Texture2D destTex = new Texture2D(Width, Height, sourceTex.format, true);
+		Color[] destPix = new Color[Width * Height];
+		int y = 0;
+		while (y < Height) {
+			int x = 0;
+			while (x < Width) {
+				float xFrac = x * 1.0F / (Width );
+				float yFrac = y * 1.0F / (Height);
+				destPix[y * Width + x] = sourceTex.GetPixelBilinear(xFrac, yFrac);
+				x++;
+			}
+			y++;
+		}
+		destTex.SetPixels(destPix);
+		destTex.Apply();
+		return destTex;
+	}
+
+	// Flip/Mirror the pixels in a Texture2D about the x axis
+	Texture2D Flip(Texture2D sourceTex) {
+		// Create a new Texture2D the same dimensions and format as the input
+		Texture2D Output = new Texture2D(sourceTex.width, sourceTex.height, sourceTex.format, true);
+		// Loop through pixels
+		for (int y = 0; y < sourceTex.height; y++)
+		{
+			for (int x = 0; x < sourceTex.width; x++)
+			{
+				// Retrieve pixels in source from left-to-right, bottom-to-top
+				Color pix = sourceTex.GetPixel(sourceTex.width + x, (sourceTex.height-1) - y);
+				// Write to output from left-to-right, top-to-bottom
+				Output.SetPixel(x, y, pix);
+			}
+		}
+		return Output;
+	}
+
+
+
 }
 
