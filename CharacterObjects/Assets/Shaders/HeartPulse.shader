@@ -1,4 +1,4 @@
-﻿Shader ".ShaderExample/heart" 
+﻿Shader ".ShaderExample/HeartPulse" 
 {
 	   Properties {
 	       _Color ("Main Color", Color) = (0.5, 0.5, 0.5, 1)

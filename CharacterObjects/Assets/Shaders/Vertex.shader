@@ -23,7 +23,10 @@ Shader ".ShaderExample/VertexSimple" {
           return o;
       }
 
-      fixed4 frag (v2f i) : SV_Target { return i.color; }
+      fixed4 frag (v2f i) : SV_Target 
+      { 
+      	return i.color;
+      }
       ENDCG
     }
 
