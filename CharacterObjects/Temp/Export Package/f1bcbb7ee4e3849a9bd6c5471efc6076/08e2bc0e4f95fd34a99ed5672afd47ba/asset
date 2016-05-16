@@ -1,0 +1,28 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class WaterSplash : MonoBehaviour {
+	
+	public GameObject SplashPrefab;
+	public GameObject SplashDecalPrefab;
+	public float SplashVelocityLength;
+	private FPSWalker playerMove;
+
+	void Start () {
+		playerMove = transform.GetComponent<FPSWalker>();
+	}
+	
+	void Update () {
+
+	}
+	
+	void OnTriggerEnter (Collider other) {
+		if(other.CompareTag("SwimTrigger")) {
+			if(playerMove.oldMoveDirection.magnitude >= SplashVelocityLength) {
+				other.audio.Play();
+				Instantiate(SplashPrefab, transform.position + Vector3.up * 1.5f, Quaternion.Euler(new Vector3(270.0f, 0.0f, 0.0f)));
+				Instantiate(SplashDecalPrefab, transform.position + Vector3.up * 1.5f, Quaternion.Euler(new Vector3(270.0f, 0.0f, 0.0f)));
+			}
+		}
+	}
+}

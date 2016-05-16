@@ -48,7 +48,7 @@
 
 			fixed4 frag(v2f IN) : COLOR
 			{
-				fixed4 textureColor = tex2D(_MainTex, IN.textureCoordinate);
+				fixed4 textureColor = tex2D(_MainTex, IN.textureCoordinate) * _Color;
 				return textureColor;
 				//return _Color;
 			}

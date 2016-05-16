@@ -1,0 +1,6 @@
+#ifndef EFFECTS_CG_INCLUDED
+#define EFFECTS_CG_INCLUDED
+
+#include "../../FXLab/Shader/FXLab.cginc"
+
+#endif

@@ -20,6 +20,7 @@
 	{
 		//Tags { "RenderType"="Opaque" }
 		Tags { "RenderType" = "Transparent" "Opaque" = "Transparent" }  
+		LOD 200
 
 			CGPROGRAM
 			#pragma surface surf SimpleSpecular alpha 
@@ -27,6 +28,7 @@
 		
 
 			sampler2D _MainTex;
+			//float4 _MainTex_ST;
 			float _Shininess;
 			float4 _ColorTint;
 			sampler2D _BumpMap;
@@ -70,12 +72,9 @@
 
 		   }
 
-
 			ENDCG
 
-
 	}
-
 
 	Fallback "Diffuse"
 }

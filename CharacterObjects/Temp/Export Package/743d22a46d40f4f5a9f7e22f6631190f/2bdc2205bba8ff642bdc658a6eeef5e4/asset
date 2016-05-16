@@ -1,0 +1,172 @@
+Shader "TMG/TMG_8SplatShader_BumpSpecular" {
+Properties {
+	_Control ("Control Mask 1 (RGBA)", 2D) = "red" {}
+	_Splat0 ("Layer 0 (R)", 2D) = "white" {}
+	_Splat1 ("Layer 1 (G)", 2D) = "white" {}
+	_Splat2 ("Layer 2 (B)", 2D) = "white" {}
+	_Splat3 ("Layer 3 (A)", 2D) = "white" {}
+	_Control2 ("Control Mask 2 (RGBA)", 2D) = "red" {}
+	_Splat4 ("Layer 4 (R)", 2D) = "white" {}
+	_Splat5 ("Layer 5 (G)", 2D) = "white" {}
+	_Splat6 ("Layer 6 (B)", 2D) = "white" {}
+	_Splat7 ("Layer 7 (A)", 2D) = "white" {}
+}
+	
+SubShader {
+
+Tags { "SplatCount" = "4" "Queue" = "Geometry-100" "IgnoreProjector"="False" "RenderType" = "Opaque" }
+LOD 400
+
+CGPROGRAM
+#pragma surface surf SplatSpecular
+#pragma target 3.0
+#include "UnityCG.cginc"
+
+struct Input {
+	float2 uv_Control : TEXCOORD0;
+	float2 uv_Splat0 : TEXCOORD1;
+	float2 uv_Splat1 : TEXCOORD2;
+	float2 uv_Splat2 : TEXCOORD3;
+	float2 uv_Splat3 : TEXCOORD4;
+};
+
+sampler2D _Control;
+sampler2D _Splat0,_Splat1,_Splat2,_Splat3;
+
+sampler2D _BumpMap_0, _BumpMap_1, _BumpMap_2, _BumpMap_3;
+float _Spec_0, _Spec_1, _Spec_2, _Spec_3;
+float _Tile_0, _Tile_1, _Tile_2, _Tile_3;
+
+half4 LightingSplatSpecular (SurfaceOutput s, half3 lightDir, half3 viewDir, half atten) {
+	half3 h = normalize (lightDir + viewDir);
+
+	half diff = max (0, dot (s.Normal, lightDir));
+
+	float nh = max (0, dot (s.Normal, h));
+	float spec = pow (nh, 48);
+
+	half4 c;
+	c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec * s.Specular) * (atten * 2);
+	c.a = s.Alpha;
+	return c;
+}
+
+void surf (Input IN, inout SurfaceOutput o) {
+	fixed4 splat_control = tex2D (_Control, IN.uv_Control);
+	fixed3 col  = fixed3(0,0,0);
+	
+	float4 tmp = tex2D (_Splat0, IN.uv_Splat0);
+	col = lerp(col, tmp.rgb, splat_control.r * tmp.a);
+	
+	o.Normal = splat_control.r * UnpackNormal(tex2D(_BumpMap_0, float2(IN.uv_Control.x * _Tile_0, IN.uv_Control.y * _Tile_0)));
+	o.Gloss = _Spec_0 * splat_control.r;
+	o.Specular = _Spec_0 * splat_control.r;
+	
+	tmp = tex2D (_Splat1, IN.uv_Splat1);
+	col = lerp(col, tmp.rgb, splat_control.g * tmp.a);
+	
+	o.Normal += splat_control.g * UnpackNormal(tex2D(_BumpMap_1, float2(IN.uv_Control.x * _Tile_1, IN.uv_Control.y * _Tile_1)));
+	o.Gloss += _Spec_1 * splat_control.g;
+	o.Specular += _Spec_1 * splat_control.g;
+	
+	tmp = tex2D (_Splat2, IN.uv_Splat2);
+	col = lerp(col, tmp.rgb, splat_control.b * tmp.a);
+	
+	o.Normal += splat_control.b * UnpackNormal(tex2D(_BumpMap_2, float2(IN.uv_Control.x * _Tile_2, IN.uv_Control.y * _Tile_2)));
+	o.Gloss += _Spec_2 * splat_control.b;
+	o.Specular += _Spec_2 * splat_control.b;
+	
+	tmp = tex2D (_Splat3, IN.uv_Splat3);
+	col = lerp(col, tmp.rgb, splat_control.a * tmp.a);
+	
+	o.Normal += splat_control.a * UnpackNormal(tex2D(_BumpMap_3, float2(IN.uv_Control.x * _Tile_3, IN.uv_Control.y * _Tile_3)));
+	o.Gloss += _Spec_3 * splat_control.a;
+	o.Specular += _Spec_3 * splat_control.a;
+	
+	o.Normal = normalize(o.Normal);
+	
+	o.Albedo = col;
+}
+ENDCG
+
+Tags {"SplatCount" = "4" "Queue" = "Geometry-99" "IgnoreProjector"="False" "RenderType" = "Opaque" }
+LOD 400
+
+CGPROGRAM
+#pragma surface surf SplatSpecular decal:add
+#pragma target 3.0
+#include "UnityCG.cginc"
+
+struct Input {
+	float2 uv_Control2 : TEXCOORD5;
+	float2 uv_Splat4 : TEXCOORD6;
+	float2 uv_Splat5 : TEXCOORD7;
+	float2 uv_Splat6 : TEXCOORD8;
+	float2 uv_Splat7 : TEXCOORD9;
+};
+
+sampler2D _Control2;
+sampler2D _Splat4,_Splat5,_Splat6,_Splat7;
+
+sampler2D _BumpMap_4, _BumpMap_5, _BumpMap_6, _BumpMap_7;
+float _Spec_4, _Spec_5, _Spec_6, _Spec_7;
+float _Tile_4, _Tile_5, _Tile_6, _Tile_7;
+
+half4 LightingSplatSpecular (SurfaceOutput s, half3 lightDir, half3 viewDir, half atten) {
+	half3 h = normalize (lightDir + viewDir);
+
+	half diff = max (0, dot (s.Normal, lightDir));
+
+	float nh = max (0, dot (s.Normal, h));
+	float spec = pow (nh, 48);
+
+	half4 c;
+	c.rgb = (s.Albedo * _LightColor0.rgb * diff + _LightColor0.rgb * spec * s.Specular) * (atten * 2);
+	c.a = s.Alpha;
+	return c;
+}
+
+void surf (Input IN, inout SurfaceOutput o) {
+	fixed4 splat_control2 = tex2D (_Control2, IN.uv_Control2);
+	fixed3 col = fixed3(0,0,0);
+	
+	float4 tmp = tex2D (_Splat4, IN.uv_Splat4);
+	col = lerp(col, tmp.rgb, splat_control2.r * tmp.a);
+	
+	o.Normal = splat_control2.r * UnpackNormal(tex2D(_BumpMap_4, float2(IN.uv_Control2.x * _Tile_4, IN.uv_Control2.y * _Tile_4)));
+	o.Gloss = _Spec_4 * splat_control2.r;
+	o.Specular = _Spec_4 * splat_control2.r;
+	
+	tmp = tex2D (_Splat5, IN.uv_Splat5);
+	col = lerp(col, tmp.rgb, splat_control2.g * tmp.a);
+	
+	o.Normal += splat_control2.g * UnpackNormal(tex2D(_BumpMap_5, float2(IN.uv_Control2.x * _Tile_5, IN.uv_Control2.y * _Tile_5)));
+	o.Gloss += _Spec_5 * splat_control2.g;
+	o.Specular += _Spec_5 * splat_control2.g;
+	
+	tmp = tex2D (_Splat6, IN.uv_Splat6);
+	col = lerp(col, tmp.rgb, splat_control2.b * tmp.a);
+	
+	o.Normal += splat_control2.b * UnpackNormal(tex2D(_BumpMap_6, float2(IN.uv_Control2.x * _Tile_6, IN.uv_Control2.y * _Tile_6)));
+	o.Gloss += _Spec_6 * splat_control2.b;
+	o.Specular += _Spec_6 * splat_control2.b;
+	
+	tmp = tex2D (_Splat7, IN.uv_Splat7);
+	col = lerp(col, tmp.rgb, splat_control2.a * tmp.a);
+	
+	o.Normal += splat_control2.a * UnpackNormal(tex2D(_BumpMap_7, float2(IN.uv_Control2.x * _Tile_7, IN.uv_Control2.y * _Tile_7)));
+	o.Gloss += _Spec_7 * splat_control2.a;
+	o.Specular += _Spec_7 * splat_control2.a;
+	
+	o.Normal = normalize(o.Normal);
+	
+	o.Albedo = col;
+}
+ENDCG 
+
+}
+
+// Fallback to Diffuse
+Fallback "Diffuse"
+
+}

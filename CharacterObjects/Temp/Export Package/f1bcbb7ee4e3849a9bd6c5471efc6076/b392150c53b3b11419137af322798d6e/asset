@@ -1,0 +1,225 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class FXWaterEvents : MonoBehaviour {
+	
+	public GameObject WaterPlane;
+	public bool UseWaterDecals;
+	public float DecalMinDuration = 8.0f;
+    public float DecalMaxDuration = 10.0f;
+    public float DecalMinSize = 1.0f;
+    public float DecalMaxSize = 2.0f;
+	public float WaterDecalSpawnOffset = 1;
+
+	public bool UseIdleDecal;
+    public Material DecalIdleMaterial;
+	public float IdleDecalSpawnInterval = 3;
+	private float IdleDecalSpawnTime;
+	
+	public bool UseMoveDecal;
+	public Material DecalMoveMaterial;
+	public float MoveDecalSpawnInterval = 0.2f;
+	private float MoveDecalSpawnTime;
+	
+	public bool UseUnderWaterView;
+	public Material UnderWaterScreenMaterial;
+	public Material UnderWaterSurfaceMaterial;
+	private float WaterHigh;
+	private static Texture2D dummyTexture;
+	private GameObject UnderWaterSurface = null;
+	
+	public bool UseWaterFog;
+	public Color WaterFogColor = Color.blue;
+	public FogMode WaterFogMode = FogMode.Exponential;
+	public float WaterFogDensity = 0.025f;
+	public float WaterLinearFogMinDistance = 0.0f;
+	public float WaterLinearFogMaxDistance = 50.0f;
+	
+	public bool UseUnderWaterSound;
+	public AudioSource AmbientAudioSource;
+	
+	public Camera PlayerCamera;
+	
+	private bool FogUsed;
+	private Color OldFogColor;
+	private FogMode OldFogMode;
+	private float OldFogDensity;
+	private float OldLinearFogMinDistance;
+	private float OldLinearFogMaxDistance;
+	
+	private bool IsMoving;
+	public static bool IsSwiming;
+	
+	void Awake()
+    {
+        if (!dummyTexture)
+            dummyTexture = new Texture2D(1, 1);
+		
+		if(RenderSettings.fog) {
+			FogUsed = RenderSettings.fog;
+			OldFogColor = RenderSettings.fogColor;
+			OldFogMode = RenderSettings.fogMode;
+			OldFogDensity = RenderSettings.fogDensity;
+			OldLinearFogMinDistance = RenderSettings.fogStartDistance;
+			OldLinearFogMaxDistance = RenderSettings.fogEndDistance;
+		}
+    }
+
+	void Start () {
+		if(WaterPlane.GetComponent<Collider>() != null)
+			Destroy(WaterPlane.GetComponent<Collider>());
+		
+		if(UseUnderWaterView) {
+			UnderWaterSurface = Instantiate(WaterPlane,WaterPlane.transform.position, WaterPlane.transform.rotation) as GameObject;
+			UnderWaterSurface.name = WaterPlane.gameObject.name + "_UnderWaterSurface";
+			UnderWaterSurface.transform.parent = WaterPlane.transform;
+			UnderWaterSurface.transform.Rotate(Vector3.right, 180.0f, Space.World);
+			UnderWaterSurface.renderer.material = UnderWaterSurfaceMaterial;
+			if(UnderWaterSurface.GetComponent<Collider>() != null)
+				Destroy(UnderWaterSurface.GetComponent<Collider>());
+			UnderWaterSurface.renderer.receiveShadows = false;
+			UnderWaterSurface.renderer.castShadows = false;
+			UnderWaterSurface.layer = LayerMask.NameToLayer("Default");
+		}
+	}
+	
+	void Update () {
+		IsMoving = FPSWalker.IsMoving;
+		
+		if(UseUnderWaterView)
+			WaterHigh = (PlayerCamera.transform.position.y - WaterPlane.transform.position.y);
+	}
+	
+	void SetWaterFog() {
+		RenderSettings.fogColor = WaterFogColor;
+		RenderSettings.fogMode = WaterFogMode;
+		if(WaterFogMode == FogMode.Exponential)
+			RenderSettings.fogDensity = WaterFogDensity;
+		else if(WaterFogMode == FogMode.ExponentialSquared)
+			RenderSettings.fogDensity = WaterFogDensity;
+		else if(WaterFogMode == FogMode.Linear) {
+			RenderSettings.fogStartDistance = WaterLinearFogMinDistance;
+			RenderSettings.fogEndDistance = WaterLinearFogMaxDistance;
+		}
+	}
+	
+	void SetOrginalFog() {
+		RenderSettings.fogColor = OldFogColor;
+		RenderSettings.fogMode = OldFogMode;
+		if(WaterFogMode == FogMode.Exponential)
+			RenderSettings.fogDensity = OldFogDensity;
+		else if(WaterFogMode == FogMode.ExponentialSquared)
+			RenderSettings.fogDensity = OldFogDensity;
+		else if(WaterFogMode == FogMode.Linear) {
+			RenderSettings.fogStartDistance = OldLinearFogMinDistance;
+			RenderSettings.fogEndDistance = OldLinearFogMaxDistance;
+		}
+	}
+	
+	void OnGUI()
+    {
+        if (!enabled || Event.current.type != EventType.repaint)
+            return;
+		
+		if(IsSwiming) {
+			if(PlayerCamera.transform.position.y < WaterPlane.transform.position.y) {
+				if(UseUnderWaterSound)
+					AmbientAudioSource.pitch = 0.75f;
+				if(UseWaterFog) {	
+					SetWaterFog();
+					RenderSettings.fog = true;
+				}
+				if(UseUnderWaterView) {
+					UnderWaterSurface.renderer.enabled = true;
+					Shader.SetGlobalFloat("_WaterHigh", (WaterHigh * -1) * Screen.height);
+	       			Graphics.DrawTexture(PlayerCamera.pixelRect, dummyTexture, UnderWaterScreenMaterial);
+				} else {
+					if(UnderWaterSurface != null) 
+						UnderWaterSurface.renderer.enabled = false;
+				}
+			} else {
+				if(UseUnderWaterSound)
+					AmbientAudioSource.pitch = 1.0f;
+				if(FogUsed) {
+					SetOrginalFog();
+					RenderSettings.fog = true;
+				} else {
+					RenderSettings.fog = false;
+				}
+			}
+		}
+    }
+	
+	void OnTriggerEnter (Collider other) {
+		if(other.CompareTag("SwimTrigger")) {
+			if(!IsSwiming)
+				IsSwiming = true;
+		}
+	}
+	
+	void OnTriggerStay (Collider other) {
+		if(other.CompareTag("SwimTrigger"))
+			IsSwiming = true;
+		
+		if(UseWaterDecals) {
+			if(other.CompareTag("SwimTrigger")) {
+				if(!IsMoving) {
+					if(UseIdleDecal) {
+						if(PlayerCamera.transform.position.y <= WaterPlane.transform.position.y + WaterDecalSpawnOffset && PlayerCamera.transform.position.y >= WaterPlane.transform.position.y) {
+							if(Time.time >= IdleDecalSpawnTime) {
+								SpawnIdleDecal(new Vector3(transform.position.x, WaterPlane.transform.position.y, transform.position.z));
+								IdleDecalSpawnTime = Time.time + IdleDecalSpawnInterval;
+							}
+						}
+					}
+				} else {
+					if(UseMoveDecal) {
+						if(PlayerCamera.transform.position.y <= WaterPlane.transform.position.y + WaterDecalSpawnOffset && PlayerCamera.transform.position.y >= WaterPlane.transform.position.y) {
+							if(Time.time >= MoveDecalSpawnTime) {
+								SpawnMoveDecal(new Vector3(transform.position.x, WaterPlane.transform.position.y, transform.position.z));
+								MoveDecalSpawnTime = Time.time + MoveDecalSpawnInterval;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	void OnTriggerExit (Collider other) {
+		if(other.CompareTag("SwimTrigger")) {
+			if(IsSwiming)
+				IsSwiming = false;
+		}
+	}
+	
+	private void SpawnMoveDecal(Vector3 position)
+    {
+        var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+		plane.transform.rotation = Quaternion.LookRotation(new Vector3(FPSWalker.MoveDir.x, 0.0f, FPSWalker.MoveDir.z));
+        plane.layer = WaterPlane.layer;
+        plane.renderer.sharedMaterial = (Material)Instantiate(DecalMoveMaterial);
+		plane.renderer.castShadows = false;
+		plane.renderer.receiveShadows = false;
+        plane.transform.position = position;
+        var decal = plane.AddComponent<WaterDecal>();
+		decal.collider.enabled = false;
+        decal.Duration = Random.Range(DecalMinDuration/2, DecalMaxDuration/2);
+        decal.MaxSize = Random.Range(DecalMinSize/2, DecalMaxSize/2);
+    }
+	
+	private void SpawnIdleDecal(Vector3 position)
+    {
+        var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane.layer = WaterPlane.layer;
+        plane.renderer.sharedMaterial = (Material)Instantiate(DecalIdleMaterial);
+		plane.renderer.castShadows = false;
+		plane.renderer.receiveShadows = false;
+        plane.transform.position = position;
+        var decal = plane.AddComponent<WaterDecal>();
+		decal.collider.enabled = false;
+        decal.Duration = Random.Range(DecalMinDuration, DecalMaxDuration);
+        decal.MaxSize = Random.Range(DecalMinSize, DecalMaxSize);
+    }
+	
+}

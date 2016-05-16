@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class DelayDestroy : MonoBehaviour {
+	
+	public float LifeTime = 1.0f;
+	private bool AKTIVE;
+	
+	void Awake() {
+
+	}
+	
+	void Update () {
+		if(AKTIVE){
+			if(Time.time > LifeTime)
+				Destroy(gameObject);
+		}
+	}
+	
+	public void SetLifeTime(float time)  {
+		LifeTime = Time.time + time;
+		AKTIVE = true;
+	}
+}

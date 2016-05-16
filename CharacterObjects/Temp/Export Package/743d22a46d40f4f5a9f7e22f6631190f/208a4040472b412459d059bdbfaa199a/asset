@@ -1,0 +1,141 @@
+using UnityEngine;
+using System.Collections;
+
+public class Bullet_Default : MonoBehaviour {
+	
+	private Vector3 Direction;
+	private float Speed;
+	private Vector3 Position;
+	private Vector3 OldPosition;
+	
+	private float Range = 1000.0f;
+	private float FlyDistance;
+	
+	private float GravityDelta = 0.055f;
+	private float DeltaTime = 0.0012345f;
+	
+	private bool HitSomething;
+	private float TargetTime;
+	
+	private Weapon_Sniper sniperScript;
+	private FXPostProcess FSE;
+	
+	private Vector3 WindDirection;
+	private float WindStrength;
+	
+	public void InitBullet(Vector3 startVector, Vector3 direction, float speed, Vector3 WindDirection, float WindStrength, Weapon_Sniper WS) {
+		this.Direction = direction;
+		this.Speed = speed;
+		this.Position = startVector;
+		this.WindDirection = WindDirection;
+		this.WindStrength = WindStrength;
+		this.sniperScript = WS;
+	}
+	
+	void Start () {
+		HitSomething = false;
+		GetComponent<Camera>().enabled = true;
+		FSE = GetComponent<FXPostProcess>();
+		FSE.enabled = true;
+		audio.Play();
+	}
+	
+	RaycastHit hitInfo;
+	Vector3 LookDirection;
+	void FixedUpdate () {
+		if(!HitSomething) {
+			OldPosition = Position;
+			Position = Position + Direction.normalized * Speed + (Physics.gravity*GravityDelta) * DeltaTime;
+			Position += WindDirection*WindStrength;
+			Direction = Direction.normalized * Speed + (Physics.gravity*GravityDelta) * DeltaTime;
+			Direction += WindDirection*WindStrength;
+			bool hasHitSomething = Physics.Linecast(OldPosition, Position, out hitInfo);
+			if (hasHitSomething) {
+				HitSomething = true;
+				FSE.enabled = false;
+				if(hitInfo.collider.gameObject.CompareTag("Barrel")) {
+					this.sniperScript.SetRandomWind();
+					LookDirection = Direction.normalized;
+					SetCamera();
+				}
+				audio.Stop();
+			}
+			transform.rotation = Quaternion.LookRotation(Direction);
+			transform.position = Position;
+		} else {
+			if(Time.time > TargetTime) {
+				this.sniperScript.EnableScope(true);
+				Destroy(gameObject);
+			}
+			UpdateCamera();
+		}
+		
+		if(!HitSomething) {
+			FlyDistance += Vector3.Distance(OldPosition, Position);
+			if(FlyDistance > Range) {
+				this.sniperScript.EnableScope(true);
+	            Destroy(gameObject);
+			}
+		}
+	}
+
+	void SetCamera() {
+		hitInfo.collider.transform.GetComponent<ExplodingBarrel>().Explode(Quaternion.LookRotation(hitInfo.normal, Vector3.up));
+		TargetTime = Time.time + 10.0f;
+		Position = hitInfo.collider.transform.position;
+		
+		float ForwardOffset = 100.0f;
+		float UpOffset = 15.0f;
+		bool searchCameraPosition = true;
+		int maxCycles = 256;
+		int counter = 0;
+		
+		RaycastHit searchHit = new RaycastHit();
+		while(searchCameraPosition) {
+			if(Physics.Linecast(hitInfo.point, hitInfo.point + new Vector3(-LookDirection.normalized.x, 0.0f, -LookDirection.normalized.z) * ForwardOffset + Vector3.up * UpOffset, out searchHit)) {
+				if(searchHit.collider.CompareTag("Terrain")) {
+					searchCameraPosition = true;
+					if(ForwardOffset >= 60.0f)
+						ForwardOffset -= 2.0f;
+					else 
+						ForwardOffset = 60.0f;
+					UpOffset += 5.0f;
+				}
+			} else {
+				searchCameraPosition = false;
+			}
+			
+			counter++;
+			if(counter >= maxCycles)
+				searchCameraPosition = false;
+		}
+		
+		Position += new Vector3(-LookDirection.normalized.x, 0.0f, -LookDirection.normalized.z) * ForwardOffset;
+		Position += Vector3.up * UpOffset;
+		Position += new Vector3(LookDirection.normalized.x, 0.0f, LookDirection.normalized.z) * 5.0f + Vector3.up * 5.0f;
+		
+		LookDirection = hitInfo.point - Position;
+		camera.fieldOfView = 85.0f;
+	}
+	
+	Vector3 oldPosition;
+	Vector3 checkDirection;
+	void UpdateCamera() {
+		float moveDot = 0.0f;
+		LookDirection = transform.position - hitInfo.point;
+		
+		RaycastHit moveHit;
+		if(Physics.SphereCast(transform.position,1.5f, checkDirection.normalized, out moveHit, 1.0f)) {
+			moveDot = Vector3.Dot(moveHit.normal,checkDirection.normalized);
+		}
+		
+		transform.Translate(Vector3.Slerp(LookDirection.normalized, Vector3.up, Mathf.Abs(moveDot) * 5.0f) * 0.75f * Time.deltaTime,Space.World);
+		camera.fieldOfView += Time.deltaTime*2;
+		
+		transform.rotation = Quaternion.LookRotation(-LookDirection, Vector3.up);
+		checkDirection = transform.position - oldPosition;
+		transform.Translate(Vector3.up * 1.5f * Time.deltaTime, Space.World);
+		oldPosition = transform.position;
+	}
+
+}

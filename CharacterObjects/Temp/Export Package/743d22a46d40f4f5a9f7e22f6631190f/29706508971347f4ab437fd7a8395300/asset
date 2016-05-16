@@ -1,0 +1,28 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class ExplosionDebris : MonoBehaviour {
+	
+	public GameObject Debris;
+	public int minDebris;
+	public int maxDebris;
+	public float explodeForce;
+	public float LifeTime;
+	public Vector3 SpawnBounds;
+
+	void Awake () {
+		int count = Random.Range(minDebris,maxDebris);
+		for(int i=0; i<count; i++) {
+			Vector3 SpawnPosition = transform.position + new Vector3(Random.Range(-SpawnBounds.x, SpawnBounds.x), Random.Range(-SpawnBounds.y, SpawnBounds.y), Random.Range(-SpawnBounds.z, SpawnBounds.z));
+			GameObject tempdebris = Instantiate(Debris, SpawnPosition, Quaternion.identity) as GameObject;
+			Vector3 direction = new Vector3(Random.Range(-10.0f,10.0f), Random.Range(-10.0f,10.0f), Random.Range(-10.0f,10.0f));
+			tempdebris.rigidbody.AddForce(direction.normalized * explodeForce, ForceMode.Impulse);
+			tempdebris.rigidbody.angularVelocity = new Vector3(Random.Range(-25.0f,25.0f), Random.Range(-25.0f,25.0f), Random.Range(-25.0f,25.0f));
+			tempdebris.GetComponent<DelayDestroy>().SetLifeTime(LifeTime);
+		}
+	}
+	
+	void Update() {
+		
+	}
+}

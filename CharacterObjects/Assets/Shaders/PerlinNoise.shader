@@ -7,7 +7,6 @@ Shader ".ShaderExample/PerlinNoise"
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_MainTex("Main Texture", 2D) = "white" {}
 		_MainTex2("Main Texture", 2D) = "white" {}
-
 		_Distort ("Distortion [0-100]", range (0, 100)) = 10
 	}
 
@@ -42,7 +41,6 @@ Shader ".ShaderExample/PerlinNoise"
 			sampler2D _MainTex;
 			sampler2D _MainTex2;
 			float4 _Color;
-			float4 _LightColor0;
 			float _Distort;
 
 			v2f vert (appdata IN)
@@ -54,21 +52,6 @@ Shader ".ShaderExample/PerlinNoise"
 
 				return OUT;
 			}
-
-//			fixed4 frag(v2f IN) : COLOR
-//			{
-//				fixed4 textureColor = tex2D(_MainTex, IN.textureCoordinate);
-//				//return textureColor;
-//
-//				float3 normalDirection = normalize(IN.normal);
-//				float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-//				float3 diffuse = _LightColor0.rgb * max(0.0,dot(normalDirection, lightDirection));
-//
-//				return _Color * textureColor * float4(diffuse,1);
-//				//return _Color;
-//			}
-//
-//
 
 
 			float4 frag(v2f IN) : COLOR{
@@ -84,7 +67,7 @@ Shader ".ShaderExample/PerlinNoise"
 			    half4 col2 = tex2D(_MainTex2, IN.textureCoordinate.xy * _MainTex2_ST.xy + _MainTex2_ST.zw + offset);
 
 			    //Return the grayscale value in the red channel
-			    return col2.a;
+			    return col2.r * _Color;
 
 			}
 

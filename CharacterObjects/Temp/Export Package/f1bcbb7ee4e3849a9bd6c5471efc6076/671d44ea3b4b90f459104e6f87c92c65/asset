@@ -1,0 +1,58 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class SplashDecal : MonoBehaviour {
+	
+	public GameObject WaterPlane;
+	public Material DecalMaterial;
+	public float DecalMinDuration = 8.0f;
+    public float DecalMaxDuration = 10.0f;
+    public float DecalMinSize = 1.0f;
+    public float DecalMaxSize = 2.0f;
+
+	void Start () {
+	
+	}
+	
+	void Update () {
+	
+	}
+	
+	private ParticleSystem.CollisionEvent[] collisionEvents = new ParticleSystem.CollisionEvent[16];
+	void OnParticleCollision (GameObject other) {
+		
+		if(other.CompareTag("DecalTrigger")) {
+			
+			ParticleSystem particleSystem = GetComponent<ParticleSystem>();
+			
+			var safeLength = particleSystem.safeCollisionEventSize;
+			if (collisionEvents.Length < safeLength) {
+				collisionEvents = new ParticleSystem.CollisionEvent[safeLength];
+			}
+
+			var numCollisionEvents = particleSystem.GetCollisionEvents(other.gameObject, collisionEvents);
+			
+			for (var i = 0; i < numCollisionEvents; i++) {
+				var pos = collisionEvents[i].intersection;
+				SpawnDecal(new Vector3(pos.x, WaterPlane.transform.position.y, pos.z));
+			}
+			
+		}
+		
+	}
+	
+	private void SpawnDecal(Vector3 position)
+    {
+        var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane.layer = WaterPlane.layer;
+		plane.name = "SplashDecal";
+        plane.renderer.sharedMaterial = (Material)Instantiate(DecalMaterial);
+		plane.renderer.castShadows = false;
+		plane.renderer.receiveShadows = false;
+        plane.transform.position = position;
+        var decal = plane.AddComponent<WaterDecal>();
+		decal.collider.enabled = false;
+        decal.Duration = Random.Range(DecalMinDuration, DecalMaxDuration);
+        decal.MaxSize = Random.Range(DecalMinSize, DecalMaxSize);
+    }
+}

@@ -96,9 +96,9 @@ public class Skybox : MonoBehaviour {
 			CurrentColor = previousColor;
 			previousColor = ExtensionMethods.RandomColor ();
 		}
-		Color one = Color.Lerp (CurrentColor,previousColor, t);
+		Color one = Color.Lerp (CurrentColor,previousColor, t) / 2.0f;
 
-		print("time: "+t+" duration:  "+ duration);
+		//print("time: "+t+" duration:  "+ duration);
 
 		Material material = CreateGradientMaterial(Color.black,Color.black, one);
 		SetSkybox(material);

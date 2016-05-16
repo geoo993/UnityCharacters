@@ -1,0 +1,127 @@
+using UnityEngine;
+using System.Collections;
+
+[ExecuteInEditMode]
+public class TMG_8SplatShader_BumpController : MonoBehaviour {
+
+	public Texture2D Bump0;
+	public Texture2D Bump1;
+	public Texture2D Bump2;
+	public Texture2D Bump3;
+	public Texture2D Bump4;
+	public Texture2D Bump5;
+	public Texture2D Bump6;
+	public Texture2D Bump7;
+	
+	public float Tile0;
+	public float Tile1;
+	public float Tile2;
+	public float Tile3;
+	public float Tile4;
+	public float Tile5;
+	public float Tile6;
+	public float Tile7;
+	
+	public float Spec0;
+	public float Spec1;
+	public float Spec2;
+	public float Spec3;
+	public float Spec4;
+	public float Spec5;
+	public float Spec6;
+	public float Spec7;
+	
+	public bool UpdateAtRuntime;
+	
+	void Start () {
+		
+		if(Bump0)
+			Shader.SetGlobalTexture("_BumpMap_0", Bump0);
+		
+		if(Bump1)
+			Shader.SetGlobalTexture("_BumpMap_1", Bump1);
+		
+		if(Bump2)
+			Shader.SetGlobalTexture("_BumpMap_2", Bump2);
+		
+		if(Bump3)
+			Shader.SetGlobalTexture("_BumpMap_3", Bump3);
+		
+		if(Bump4)
+			Shader.SetGlobalTexture("_BumpMap_4", Bump4);
+		
+		if(Bump5)
+			Shader.SetGlobalTexture("_BumpMap_5", Bump5);
+		
+		if(Bump6)
+			Shader.SetGlobalTexture("_BumpMap_6", Bump6);
+		
+		if(Bump7)
+			Shader.SetGlobalTexture("_BumpMap_7", Bump7);
+		
+		Shader.SetGlobalFloat("_Spec_0", Spec0);
+		Shader.SetGlobalFloat("_Spec_1", Spec1);
+		Shader.SetGlobalFloat("_Spec_2", Spec2);
+		Shader.SetGlobalFloat("_Spec_3", Spec3);
+		Shader.SetGlobalFloat("_Spec_4", Spec4);
+		Shader.SetGlobalFloat("_Spec_5", Spec5);
+		Shader.SetGlobalFloat("_Spec_6", Spec6);
+		Shader.SetGlobalFloat("_Spec_7", Spec7);
+
+		Shader.SetGlobalFloat("_Tile_0", Tile0);
+		Shader.SetGlobalFloat("_Tile_1", Tile1);
+		Shader.SetGlobalFloat("_Tile_2", Tile2);
+		Shader.SetGlobalFloat("_Tile_3", Tile3);
+		Shader.SetGlobalFloat("_Tile_4", Tile4);
+		Shader.SetGlobalFloat("_Tile_5", Tile5);
+		Shader.SetGlobalFloat("_Tile_6", Tile6);
+		Shader.SetGlobalFloat("_Tile_7", Tile7);
+
+	}
+	
+	void Update () {
+		if( UpdateAtRuntime ) {
+			if(Bump0)
+				Shader.SetGlobalTexture("_BumpMap_0", Bump0);
+			
+			if(Bump1)
+				Shader.SetGlobalTexture("_BumpMap_1", Bump1);
+			
+			if(Bump2)
+				Shader.SetGlobalTexture("_BumpMap_2", Bump2);
+			
+			if(Bump3)
+				Shader.SetGlobalTexture("_BumpMap_3", Bump3);
+			
+			if(Bump4)
+				Shader.SetGlobalTexture("_BumpMap_4", Bump4);
+			
+			if(Bump5)
+				Shader.SetGlobalTexture("_BumpMap_5", Bump5);
+			
+			if(Bump6)
+				Shader.SetGlobalTexture("_BumpMap_6", Bump6);
+			
+			if(Bump7)
+				Shader.SetGlobalTexture("_BumpMap_7", Bump7);
+			
+			Shader.SetGlobalFloat("_Spec_0", Spec0);
+			Shader.SetGlobalFloat("_Spec_1", Spec1);
+			Shader.SetGlobalFloat("_Spec_2", Spec2);
+			Shader.SetGlobalFloat("_Spec_3", Spec3);
+			Shader.SetGlobalFloat("_Spec_4", Spec4);
+			Shader.SetGlobalFloat("_Spec_5", Spec5);
+			Shader.SetGlobalFloat("_Spec_6", Spec6);
+			Shader.SetGlobalFloat("_Spec_7", Spec7);
+	
+			Shader.SetGlobalFloat("_Tile_0", Tile0);
+			Shader.SetGlobalFloat("_Tile_1", Tile1);
+			Shader.SetGlobalFloat("_Tile_2", Tile2);
+			Shader.SetGlobalFloat("_Tile_3", Tile3);
+			Shader.SetGlobalFloat("_Tile_4", Tile4);
+			Shader.SetGlobalFloat("_Tile_5", Tile5);
+			Shader.SetGlobalFloat("_Tile_6", Tile6);
+			Shader.SetGlobalFloat("_Tile_7", Tile7);
+		}
+	}
+}

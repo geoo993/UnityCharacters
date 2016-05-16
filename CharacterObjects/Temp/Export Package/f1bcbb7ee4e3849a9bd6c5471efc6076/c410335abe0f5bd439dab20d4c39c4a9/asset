@@ -1,0 +1,10 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class SetPhysicsSettings : MonoBehaviour {
+
+	void Start () {
+		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Ignore Raycast"), LayerMask.NameToLayer("Ignore Raycast"), true);
+	}
+	
+}

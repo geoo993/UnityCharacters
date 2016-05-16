@@ -1,0 +1,115 @@
+using UnityEngine;
+using System.Collections;
+
+public class Weapon_Sniper : MonoBehaviour {
+	
+	public GameObject Bullet_Prefab;
+	public AudioClip FireSound;
+	public bool WeaponReady;
+	
+	public StormDirection stormDirection;
+	
+	private Camera Cam;
+	private float minZoom = 10.0f;
+	private float maxZoom = 60.0f;
+	private static float actualZoom;
+	
+	private float TargetDistance = 0.0f;
+	private RaycastHit hit;
+	
+	private Vector3 WindDirection;
+	private float WindStrength;
+	
+	private FXPostProcess ScopeLense;
+	private static bool Aktive = true;
+	
+	void Awake() {
+		ScopeLense = GetComponent<FXPostProcess>();
+		ScopeLense.enabled = Aktive;
+	}
+
+	void Start () {
+		Cam = GetComponent<Camera>();
+		WeaponReady = true;
+		SetRandomWind();
+		actualZoom = maxZoom;
+	}
+	
+	public static void SetZoom(float zoom) {
+		actualZoom = zoom;
+	}
+	
+	public void SetRandomWind() {
+		WindDirection = new Vector3(Random.Range(1.00f, -1.00f), 0.0f, Random.Range(1.00f, -1.00f));
+		WindDirection.Normalize();
+		WindStrength = Random.Range(0.005f, 0.008f);
+		stormDirection.ChangeDirection(WindDirection, 0.0f);
+	}
+
+	void Update () {
+		if(!WeaponReady)
+			return;
+		
+		if(Aktive) {
+			UpdateZoom();
+			UpdateWeapon();
+		}
+	}
+	
+	void UpdateWeapon() {
+		if(Input.GetMouseButtonDown(0)) {
+			GameObject Bullet = Instantiate(Bullet_Prefab, transform.position, Quaternion.Euler(transform.TransformDirection(Vector3.forward))) as GameObject;
+			Bullet.GetComponent<Bullet_Default>().InitBullet(transform.position, transform.forward, 10.0f, WindDirection, WindStrength, this);
+			audio.PlayOneShot(FireSound);
+			EnableScope(false);
+		}
+	}
+	
+	public void EnableScope(bool aktive) {
+		Aktive = aktive;
+		ScopeLense.enabled = aktive;
+		Cam.enabled = aktive;
+		GetComponent<AudioListener>().enabled = aktive;
+		MouseLook.SetAktive(aktive);
+	}
+
+	void UpdateZoom() {
+		actualZoom -= System.Math.Sign(Input.GetAxis("Mouse ScrollWheel")) * 5.0f;
+		actualZoom -= System.Math.Sign(Input.GetAxis("Vertical")) * 1.5f;
+	
+		actualZoom = Mathf.Clamp(actualZoom, minZoom, maxZoom);
+		Cam.fieldOfView = actualZoom;
+		
+        if (Physics.Raycast(Cam.transform.position, Cam.transform.forward, out hit, 1000.0F))
+            TargetDistance = hit.distance;
+		else
+			TargetDistance = -1.0f;
+	}
+	
+	void OnGUI()
+    {
+		if(!WeaponReady)
+			return;
+		
+		if (!ScopeLense.enabled)
+            return;
+		
+		if(EventController.FXLabShaderType)
+			GUI.Label(new Rect(10,10,250,30), "Particle Type: FXLab Particles");
+		else
+			GUI.Label(new Rect(10,10,250,30), "Particle Type: Unity Particles");
+		
+		Screen.lockCursor = true;
+    }
+	
+	public void Aktivate(bool aktive) {
+		ScopeLense.enabled = aktive;
+		MouseLook.SetAktive(aktive);
+		Aktive = aktive;
+	}
+	
+	public static bool IsAktive() {
+		return Aktive;
+	}
+	
+}

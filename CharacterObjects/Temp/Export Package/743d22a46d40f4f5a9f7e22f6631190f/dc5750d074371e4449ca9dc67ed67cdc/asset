@@ -1,0 +1,20 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class StormDirection : MonoBehaviour {
+	
+	public GameObject StormParticles;
+
+	void Start () {
+
+	}
+	
+	void Update () {
+	
+	}
+	
+	public void ChangeDirection(Vector3 windDirection, float strength) {
+		StormParticles.transform.position = transform.position + (windDirection * -1) * 750.0f;
+		StormParticles.transform.rotation = Quaternion.LookRotation(windDirection);
+	}
+}

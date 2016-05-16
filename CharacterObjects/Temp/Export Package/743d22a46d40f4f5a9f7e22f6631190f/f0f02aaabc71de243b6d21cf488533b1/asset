@@ -1,0 +1,36 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class PositionSwitch : MonoBehaviour {
+	
+	public GameObject[] Places;
+	private int numPlaces;
+	private int activPlace;
+
+	void Start () {
+		numPlaces = Places.Length;
+	}
+	
+	void Update () {
+		if(!Weapon_Sniper.IsAktive())
+			return;
+		
+		if(Input.GetMouseButtonDown(1)) {
+			activPlace++;
+			if(activPlace > numPlaces - 1)
+				activPlace = 0;
+			SwitchPosition(activPlace, true);
+		}
+	}
+	
+	void SwitchPosition(int index, bool SetRotation) {
+		Weapon_Sniper.SetZoom(60.0f);
+		transform.position = Places[index].transform.position;
+		if(SetRotation) {
+			GetComponent<MouseLook>().SetOriginalRotation(Places[index].transform.rotation);
+			GetComponent<MouseLook>().SetXRotation(0);
+			transform.FindChild("PlayerCamera").GetComponent<MouseLook>().SetYRotation(0);
+		}
+	}
+
+}

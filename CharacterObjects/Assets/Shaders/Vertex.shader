@@ -1,5 +1,5 @@
 ﻿
-Shader ".ShaderExample/VertexInputSimple" {
+Shader ".ShaderExample/VertexSimple" {
 
   SubShader {
 
