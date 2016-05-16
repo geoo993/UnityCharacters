@@ -1,5 +1,5 @@
 ﻿
-Shader "FXLab/PostProcessing/SSAO2" 
+Shader ".ShaderExample/ShockWaves" 
 {
 //    Properties {
 //		_FXScreenTexture ("Screen Texture for Refraction (FXScreenBufferTexture)", 2D) = "" {}

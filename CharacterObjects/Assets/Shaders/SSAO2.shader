@@ -1,4 +1,4 @@
-﻿Shader "FXLab/PostProcessing/SSAO2" {
+﻿Shader ".ShaderExample/SSAO2" {
 //    Properties {
 //        _FXDepthTexture ("Depth Texture (FXDepthTexture)", 2D) = "" {}
 ////      _FXWorldNormalTexture ("WorldNormal Texture (FXWorldNormalTexture)",2D) = "" {}
@@ -167,4 +167,5 @@
 //       
 //    Fallback off
 //    CustomEditor "FXMaterialEditor"
+
 }

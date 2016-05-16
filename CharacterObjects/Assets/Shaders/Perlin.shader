@@ -1,7 +1,7 @@
 // Upgrade NOTE: replaced 'glstate.matrix.modelview[0]' with 'UNITY_MATRIX_MV'
 //// Upgrade NOTE: replaced 'glstate.matrix.mvp' with 'UNITY_MATRIX_MVP'
 
-Shader "Perlin_2002_Cg_v001"{
+Shader ".ShaderExample/Perlin"{
 //	Properties 
 //	{				
 //		ambient_color 	("Ambient",  Color) = (0.5, 0.5, 0.5)

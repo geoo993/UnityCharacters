@@ -1,4 +1,4 @@
-﻿Shader "FXLab/PostProcessing/Bunell Disk SSAO" {
+﻿Shader ".ShaderExample/Bunell Disk SSAO" {
 //	 Properties {
 //	_FXDepthTexture ("Depth Texture (FXDepthTexture)", 2D) = "" {}
 //	_FXWorldNormalTexture ("World Normal Texture (FXWorldNormalTexture)", 2D) = "" {}

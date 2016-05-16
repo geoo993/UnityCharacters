@@ -19,7 +19,8 @@
 			#include "UnityCG.cginc"
 
 			fixed4 _MyColor; // low precision type is usually enough for colors
-			sampler2D _MyTexture;
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
 
 			struct v2f {
                 // we'll output world space normal as one of regular ("texcoord") interpolators
@@ -28,13 +29,12 @@
                 fixed3 color : COLOR0;
             };
 
-            float4 _MyTexture_ST;
 
             v2f vert (appdata_base IN)
 	       	{
 	            v2f OUT;
 	            OUT.pos = mul (UNITY_MATRIX_MVP, IN.vertex);
-	            OUT.worldNormal = TRANSFORM_TEX (IN.texcoord, _MyTexture);
+	            OUT.worldNormal = TRANSFORM_TEX (IN.texcoord, _MainTex);
 	            OUT.color = IN.normal * 0.5 + 0.5;
 	            return OUT;
 	        }
@@ -42,7 +42,7 @@
 
 	        fixed4 frag (v2f IN) : SV_Target
 	        {
-	            fixed4 texcol = tex2D (_MyTexture, IN.worldNormal);
+	            fixed4 texcol = tex2D (_MainTex, IN.worldNormal);
 	            fixed4 normalCol = fixed4 (IN.color, 1);
 	            return texcol * _MyColor; //* normalCol;
 	        }

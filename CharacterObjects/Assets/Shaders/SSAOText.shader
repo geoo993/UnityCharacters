@@ -1,4 +1,5 @@
-﻿Shader "Custom/SSAOTest" {
+﻿Shader ".ShaderExample/SSAOTest" 
+{
     Properties {
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _DepthTextureSampler("Depth Texture", 2D) = "black" {}
