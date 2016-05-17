@@ -30,11 +30,13 @@ public class CubeSphere : MonoBehaviour {
 
 	void Update()
 	{
-		ClearAll();
-		CreateMesh ();
+		this.transform.Rotate (0.0f, 1.0f, 0.0f);
+		//ClearAll();
+		//CreateMesh ();
 	}
 
 	void ClearAll(){
+
 
 		meshFilter.sharedMesh = null;
 		meshCollider.sharedMesh = null;
@@ -51,7 +53,9 @@ public class CubeSphere : MonoBehaviour {
 
 
 	private void CreateMesh () {
-		
+
+		this.name =  "sphereCube";
+
 		meshFilter = GetComponent<MeshFilter>();
 		if (meshFilter == null){
 			Debug.LogError("MeshFilter not found!");
@@ -249,9 +253,9 @@ public class CubeSphere : MonoBehaviour {
 
 	private void CreateCollider(){
 
-		//sphereCollider = gameObject.AddComponent(typeof(SphereCollider)) as SphereCollider;
-		meshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-		meshCollider.sharedMesh = mesh; // Give it your mesh here.
+		sphereCollider = gameObject.AddComponent(typeof(SphereCollider)) as SphereCollider;
+		//meshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+		//meshCollider.sharedMesh = mesh; // Give it your mesh here.
 	}
 
 	private void CreateColorAndtexture() {

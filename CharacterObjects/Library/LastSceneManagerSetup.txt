@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/MoveInSpace.unity
+- path: Assets/Scenes/SphereDeformation.unity
   isLoaded: 1
   isActive: 1
