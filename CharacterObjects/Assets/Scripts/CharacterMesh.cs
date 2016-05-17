@@ -12,14 +12,15 @@ public class CharacterMesh : MonoBehaviour {
 //	private Ray ray;
 //	private RaycastHit hit;
 //	private GameObject hitObject = null;
-//
-	public GameObject sphere;
-	private int currentSphereIndex = 0;
-	private List <GameObject> newSpheres = new List<GameObject>();
 
+
+//	public GameObject sphere;
+//	private int currentSphereIndex = 0;
+//	private List <GameObject> newSpheres = new List<GameObject>();
+//
 
 	[Range(2,50)] public int xSize = 9;
-	[Range(10,50)]public int ySize = 4;
+	[Range(2,50)]public int ySize = 4;
 	[Range(2,50)]public int zSize = 2;
 	[Range(0,20)]public int roundness = 0;
 
@@ -43,16 +44,16 @@ public class CharacterMesh : MonoBehaviour {
 	}
 
 
-	private GameObject createSphere(Vector3 pos , List <GameObject> objectArr){
-
-		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
-		a.transform.localScale = new Vector3 (0.4f, 0.4f, 0.4f);
-		a.GetComponent<Renderer> ().material.color = Color.red;
-		a.transform.parent = this.transform;
-		objectArr.Add (a);
-
-		return a;
-	}
+//	private GameObject createSphere(Vector3 pos , List <GameObject> objectArr){
+//
+//		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
+//		a.transform.localScale = new Vector3 (0.4f, 0.4f, 0.4f);
+//		a.GetComponent<Renderer> ().material.color = Color.red;
+//		a.transform.parent = this.transform;
+//		objectArr.Add (a);
+//
+//		return a;
+//	}
 
 
 	void Awake ()
@@ -67,7 +68,6 @@ public class CharacterMesh : MonoBehaviour {
 //		for (int i = 0; i < vertices.Length; i++) {
 //
 //			//createSphere (vertices[i], newSpheres);
-//
 //		}
 
 	}
@@ -75,7 +75,6 @@ public class CharacterMesh : MonoBehaviour {
 
 	void Update()
 	{
-
 
 //		for(int i = 0; i < vertices.Length; i++)
 //		{
@@ -339,7 +338,7 @@ public class CharacterMesh : MonoBehaviour {
 		meshRenderer = GetComponent<MeshRenderer>();
 
 		Material material = new Material (Shader.Find ("Standard"));
-		material.color = Color.red;  //Color.Lerp(Color.white, ExtensionMethods.RandomColor(), Random.Range(0.0f, 1.0f));
+		material.color = ExtensionMethods.RandomColor();
 
 		meshRenderer.material = material;
 
