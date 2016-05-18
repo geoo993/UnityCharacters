@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
+//[RequireComponent(typeof(Rigidbody))]
 
 
 public class CharacterMesh : MonoBehaviour {
@@ -33,44 +34,16 @@ public class CharacterMesh : MonoBehaviour {
 	private int zSize = 10;
 	[Range(0,6)]public int roundness = 5;
 
-	int[] left = new int[]{
-		313,314,315,316,317,
-		273,274,275,276,277,
-		233,234,235,236,237,
-		193,194,195,196,197,
-		153,154,155,156,157
-	
-	};
+	List <int> top = new List<int>(); 
+	List <int> bottom = new List<int>(); 
+	int[] left = new int[]{};
+	int[] right = new int[]{};
+	int[] front = new int[]{};
+	int[] back = new int[]{};
 
-	int[] right = new int[]{
-		293,294,295,296,297,
-		253,254,255,256,257,
-		213,214,215,216,217,
-		173,174,175,176,177,
-		133,134,135,136,137
-
-	};
-
-
-	int[] front = new int[]{
-		303,304,305,306,307,
-		263,264,265,266,267,
-		223,224,225,226,227,
-		183,184,185,186,187,
-		143,144,145,146,147
-
-	};
-
-	int[] back = new int[]{
-		283,284,285,286,287,
-		243,244,245,246,247,
-		203,204,205,206,207,
-		163,164,165,166,167,
-		123,124,125,126,127
-
-	};
-
-	private MeshCollider meshCollider; 
+	private Rigidbody meshRigidBody; 
+	//private MeshCollider meshCollider; 
+	private SphereCollider sphereCollider; 
 	private MeshFilter meshFilter ;
 	private Renderer meshRenderer;
 	private Mesh mesh;
@@ -110,11 +83,17 @@ public class CharacterMesh : MonoBehaviour {
 		CreateMesh ();
 		CreateColorAndtexture ();
 		CreateCollider();
+		//CreateRigidBody ();
 
 
 		AddSpheres ();
+		GetSides ();
+
 		moveLeftRightWings ();
 		moveFrontRear ();
+		moveTopBottom ();
+
+
 	}
 
 	void AddSpheres()
@@ -125,6 +104,68 @@ public class CharacterMesh : MonoBehaviour {
 		}
 	}
 
+	void GetSides()
+	{
+		front = new int[]{
+			303,304,305,306,307,
+			263,264,265,266,267,
+			223,224,225,226,227,
+			183,184,185,186,187,
+			143,144,145,146,147
+
+		};
+
+		back = new int[]{
+			283,284,285,286,287,
+			243,244,245,246,247,
+			203,204,205,206,207,
+			163,164,165,166,167,
+			123,124,125,126,127
+		};
+
+		right = new int[]{
+			293,294,295,296,297,
+			253,254,255,256,257,
+			213,214,215,216,217,
+			173,174,175,176,177,
+			133,134,135,136,137
+
+		};
+
+		left = new int[]{
+			313,314,315,316,317,
+			273,274,275,276,277,
+			233,234,235,236,237,
+			193,194,195,196,197,
+			153,154,155,156,157
+
+		};
+
+		for (int t = 360; t < 521; t++) {
+			top.Add(t);
+
+		}
+		for (int b = 0; b < 80; b++) {
+			bottom.Add(b);
+		}
+		for (int b2 = 521; b2 < 602; b2++) {
+			bottom.Add(b2);
+		}
+
+
+	}
+
+	void moveTopBottom ()
+	{
+		foreach (int t in top) {
+
+			newSpheres [t].GetComponent<Renderer> ().material.color = Color.cyan;
+		}
+
+		foreach (int b in bottom) {
+			newSpheres [b].GetComponent<Renderer> ().material.color = Color.black;
+		}
+	}
 	void moveLeftRightWings ()
 	{
 		for(int l = 0; l < left.Length; l++)
@@ -214,7 +255,8 @@ public class CharacterMesh : MonoBehaviour {
 		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
-		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+		//me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+
 	}
 	void fbmoveReverse(Transform me, Vector3 target)
 	{
@@ -222,7 +264,7 @@ public class CharacterMesh : MonoBehaviour {
 //		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 //		me.Translate(-((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 //		me.Translate(0.0f, -((target.y - me.position.y) / 100.0f), 0.0f);
-		me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
 	}
 
 	float getDistance(Vector3 fr, Vector3 to)
@@ -256,23 +298,30 @@ public class CharacterMesh : MonoBehaviour {
 
 		if (moveState) 
 		{
-			for (int i = 0; i < back.Length; i++) 
+			for (int i = 0; i < 25; i++) 
 			{
 				//fbmove (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
 				//fbmove (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
 
-				lrmove (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-				lrmove (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+				//lrmove (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
+				//lrmove (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+
+				//newSpheres [left [i]].transform.Translate(0.01f, 0.0f, 0.0f);
+				//newSpheres [right [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
 			}
 		}
 		if (reverseState) 
 		{
-			for (int i = 0; i < back.Length; i++) 
+			for (int i = 0; i < 25; i++) 
 			{
 				//fbmoveReverse (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
 				//fbmoveReverse (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
-				lrmoveReverse (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-				lrmoveReverse (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+				//lrmoveReverse (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
+				//lrmoveReverse (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+
+				//newSpheres [left [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
+				//newSpheres [right [i]].transform.Translate(0.01f, 0.0f, 0.0f);
+
 			}
 		}
 
@@ -303,6 +352,8 @@ public class CharacterMesh : MonoBehaviour {
 			reverseState = !reverseState;
 
 		}
+
+
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
 
 			rightLeftPos += 1.0f;
@@ -337,7 +388,6 @@ public class CharacterMesh : MonoBehaviour {
 					newSpheres [right[i]].transform.localPosition.z - 1.0f);
 			}
 
-			//updateLeftRightWings ();
 		}
 
 
@@ -347,7 +397,9 @@ public class CharacterMesh : MonoBehaviour {
 	void ClearAll(){
 		
 		meshFilter.sharedMesh = null;
-		meshCollider.sharedMesh = null;
+		//meshCollider.sharedMesh = null;
+		sphereCollider =  null;
+		meshRigidBody = null;
 		vertices = null;
 		triangles = null; 
 		normals = null;
@@ -599,9 +651,19 @@ public class CharacterMesh : MonoBehaviour {
 		return t;
 	}
 	private void CreateCollider(){
-		
-		meshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-		meshCollider.sharedMesh = mesh; // Give it your mesh here.
+
+		sphereCollider = gameObject.AddComponent (typeof(SphereCollider)) as SphereCollider;
+//		meshCollider = GetComponent(typeof(MeshCollider)) as MeshCollider;
+//		meshCollider.sharedMesh = mesh; // Give it your mesh here.
+
+	}
+
+
+
+	private void CreateRigidBody(){
+		meshRigidBody = GetComponent (typeof(Rigidbody)) as Rigidbody;
+		meshRigidBody.isKinematic = true;
+		meshRigidBody.useGravity = true;
 	}
 	private void CreateColorAndtexture() {
 
