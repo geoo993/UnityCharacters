@@ -7,7 +7,7 @@
 		_MainTex("Main Texture", 2D) = "white"{}
 		_DissolveMap("Dissolve Shape", 2D) = "white"{}
 		
-		_DissolveVal("Dissolve Value", Range(-0.2, 1.2)) = 1.2
+		_DissolveVal("Dissolve Value", Range(-1.5, 1.5)) = 1.2
 		_LineWidth("Line Width", Range(0.0, 0.2)) = 0.1
 		
 		_LineColor("Line Color", Color) = (1.0, 1.0, 1.0, 1.0)
