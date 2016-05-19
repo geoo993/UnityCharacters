@@ -9,6 +9,8 @@ public class SensorGround : MonoBehaviour {
 
 		triggered = 1;
 
+		print ("ground sensor entered =  1");
+
 	}
 	
 	void OnTriggerExit  (Collider other) {

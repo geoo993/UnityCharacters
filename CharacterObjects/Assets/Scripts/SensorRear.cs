@@ -8,6 +8,7 @@ public class SensorRear : MonoBehaviour {
 	void OnTriggerEnter  ( Collider other ) {
 
 		sensorRear = 1;
+		//print ("rear sensor entered");
 	}
 	
 	void OnTriggerExit  ( Collider other ) {

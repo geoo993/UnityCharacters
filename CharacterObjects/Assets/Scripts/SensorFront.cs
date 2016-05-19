@@ -8,6 +8,7 @@ public class SensorFront : MonoBehaviour {
 	void OnTriggerEnter  (Collider other ) {
 
 		sensorFront = 1;
+		//print ("front sensor entered");
 	}
 	
 	void OnTriggerExit  ( Collider other ) {

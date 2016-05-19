@@ -26,7 +26,7 @@ public class CameraFollow : MonoBehaviour {
 
 	void Update ()
 	{
-		plane.GetComponent<AirplaneMovement>().PlaneMove();
+		//plane.GetComponent<AirplaneMovement>().PlaneMove();
 
 
 

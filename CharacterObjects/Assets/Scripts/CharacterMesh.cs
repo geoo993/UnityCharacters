@@ -14,15 +14,18 @@ public class CharacterMesh : MonoBehaviour {
 //	private RaycastHit hit;
 //	private GameObject hitObject = null;
 
+	GameObject topParent = null;
+	GameObject bottomParent = null;
+	GameObject rightParent = null;
+	GameObject leftParent = null;
+	GameObject frontParent = null;
+	GameObject backParent = null;
 
 	public GameObject sphere;
 	private int currentSphereIndex = 0;
 	private List <GameObject> newSpheres = new List<GameObject>();
 
-
-	private float rightLeftPos = 0.0f; 
-
-
+	private float rightLeftWings = 0.0f; 
 
 	private float spreadCount = 0;
 	private bool spreadState =false;
@@ -62,6 +65,7 @@ public class CharacterMesh : MonoBehaviour {
 	}
 
 
+
 	private GameObject createSphere(Vector3 pos , List <GameObject> objectArr, int Id){
 
 		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
@@ -71,6 +75,14 @@ public class CharacterMesh : MonoBehaviour {
 		a.transform.parent = this.transform;
 		objectArr.Add (a);
 
+		return a;
+	}
+	GameObject createParent(Vector3 pos, string name)
+	{
+		GameObject a = new GameObject ();
+		a.name = name;
+		a.transform.parent = this.transform;
+		a.transform.localPosition = pos;
 		return a;
 	}
 
@@ -88,19 +100,16 @@ public class CharacterMesh : MonoBehaviour {
 
 		AddSpheres ();
 		GetSides ();
-
-		moveLeftRightWings ();
-		moveFrontRear ();
-		moveTopBottom ();
+		IdSpheres ();
 
 
 	}
 
 	void AddSpheres()
 	{
-		for (int i = 0; i < vertices.Length; i++) {
-
-			createSphere (vertices[i], newSpheres, i);
+		for (int i = 0; i < vertices.Length; i++) 
+		{
+			createSphere (this.transform.position + vertices[i], newSpheres, i);
 		}
 	}
 
@@ -112,7 +121,6 @@ public class CharacterMesh : MonoBehaviour {
 			223,224,225,226,227,
 			183,184,185,186,187,
 			143,144,145,146,147
-
 		};
 
 		back = new int[]{
@@ -129,7 +137,6 @@ public class CharacterMesh : MonoBehaviour {
 			213,214,215,216,217,
 			173,174,175,176,177,
 			133,134,135,136,137
-
 		};
 
 		left = new int[]{
@@ -138,12 +145,10 @@ public class CharacterMesh : MonoBehaviour {
 			233,234,235,236,237,
 			193,194,195,196,197,
 			153,154,155,156,157
-
 		};
 
 		for (int t = 360; t < 521; t++) {
 			top.Add(t);
-
 		}
 		for (int b = 0; b < 80; b++) {
 			bottom.Add(b);
@@ -151,85 +156,55 @@ public class CharacterMesh : MonoBehaviour {
 		for (int b2 = 521; b2 < 602; b2++) {
 			bottom.Add(b2);
 		}
-
-
+			
 	}
 
-	void moveTopBottom ()
-	{
-		foreach (int t in top) {
 
+	void IdSpheres ()
+	{
+		topParent = createParent(newSpheres [top [120]].transform.localPosition, "top");
+		bottomParent = createParent(newSpheres [bottom [120]].transform.localPosition, "bottom");
+		leftParent = createParent(newSpheres [left [12]].transform.localPosition, "left");
+		rightParent = createParent(newSpheres [right [12]].transform.localPosition, "right");
+		frontParent = createParent(newSpheres [front [12]].transform.localPosition, "front");
+		backParent = createParent(newSpheres [back [12]].transform.localPosition, "back");
+
+		foreach (int t in top) 
+		{
+			newSpheres [t].transform.parent = topParent.transform;
 			newSpheres [t].GetComponent<Renderer> ().material.color = Color.cyan;
 		}
 
-		foreach (int b in bottom) {
+		foreach (int b in bottom) 
+		{
+			newSpheres [b].transform.parent = bottomParent.transform;
 			newSpheres [b].GetComponent<Renderer> ().material.color = Color.black;
 		}
-	}
-	void moveLeftRightWings ()
-	{
-		for(int l = 0; l < left.Length; l++)
-		{
-			newSpheres [left[l]].transform.localPosition = new Vector3( 
-				newSpheres [left[l]].transform.localPosition.x - 5.0f,
-				newSpheres [left[l]].transform.localPosition.y,
-				newSpheres [left[l]].transform.localPosition.z - rightLeftPos);
 
-			newSpheres [left[l]].GetComponent<Renderer> ().material.color = Color.magenta;
+		for(int i = 0; i < 25; i++)
+		{
+			newSpheres [left[i]].transform.parent = leftParent.transform;
+			newSpheres [right[i]].transform.parent = rightParent.transform;
+			newSpheres [front[i]].transform.parent = frontParent.transform;
+			newSpheres [back[i]].transform.parent = backParent.transform;
+
+			newSpheres [left[i]].GetComponent<Renderer> ().material.color = Color.magenta;
+			newSpheres [right[i]].GetComponent<Renderer> ().material.color = Color.green;
+			newSpheres [front[i]].GetComponent<Renderer> ().material.color = Color.blue;
+			newSpheres [back[i]].GetComponent<Renderer> ().material.color = Color.yellow;
 		}
 		newSpheres [left[12]].GetComponent<Renderer> ().material.color = Color.white;
-
-
-
-		for(int r = 0; r < right.Length; r++)
-		{
-			newSpheres [right[r]].transform.localPosition = new Vector3( 
-				newSpheres [right[r]].transform.localPosition.x + 5.0f,
-				newSpheres [right[r]].transform.localPosition.y,
-				newSpheres [right[r]].transform.localPosition.z - rightLeftPos);
-
-			newSpheres [right[r]].GetComponent<Renderer> ().material.color = Color.green;
-		}
 		newSpheres [right[12]].GetComponent<Renderer> ().material.color = Color.white;
-
-
-	}
-
-
-
-	void moveFrontRear()
-	{
-
-		for(int f = 0; f < front.Length; f++)
-		{
-			newSpheres [front[f]].transform.localPosition = new Vector3( 
-				newSpheres [front[f]].transform.localPosition.x,
-				newSpheres [front[f]].transform.localPosition.y,
-				newSpheres [front[f]].transform.localPosition.z + 3.0f);
-
-			newSpheres [front[f]].GetComponent<Renderer> ().material.color = Color.blue;
-		}
 		newSpheres [front[12]].GetComponent<Renderer> ().material.color = Color.white;
-
-
-
-		for(int b = 0; b < back.Length; b++)
-		{
-			newSpheres [back[b]].transform.localPosition = new Vector3( 
-				newSpheres [back[b]].transform.localPosition.x,
-				newSpheres [back[b]].transform.localPosition.y,
-				newSpheres [back[b]].transform.localPosition.z - 10.0f);
-
-			newSpheres [back[b]].GetComponent<Renderer> ().material.color = Color.yellow;
-		}
-
 		newSpheres [back[12]].GetComponent<Renderer> ().material.color = Color.white;
+		newSpheres [top[120]].GetComponent<Renderer> ().material.color = Color.white;
+		newSpheres [bottom[120]].GetComponent<Renderer> ().material.color = Color.white;
+
 	}
 
 
-
-	////left and right
-	void lrmove(Transform me, Vector3 target)
+	//// animate left and right
+	void AnimateLR(Transform me, Vector3 target)
 	{
 		me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
@@ -237,7 +212,7 @@ public class CharacterMesh : MonoBehaviour {
 		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), -((target.z - me.position.z) / 100.0f));
 	}
-	void lrmoveReverse(Transform me, Vector3 target)
+	void ReverseAnimateLR(Transform me, Vector3 target)
 	{
 				me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
 		//		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -247,9 +222,8 @@ public class CharacterMesh : MonoBehaviour {
 	}
 
 
-
-	////front and back
-	void fbmove(Transform me, Vector3 target)
+	//// animate front and back
+	void AnimateFB(Transform me, Vector3 target)
 	{
 		//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
@@ -258,7 +232,7 @@ public class CharacterMesh : MonoBehaviour {
 		//me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 
 	}
-	void fbmoveReverse(Transform me, Vector3 target)
+	void ReverseAnimateFB(Transform me, Vector3 target)
 	{
 //		me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
 //		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -276,7 +250,6 @@ public class CharacterMesh : MonoBehaviour {
 		float distance = Mathf.Sqrt(xDist * xDist + yDist * yDist);
 		return distance;
 
-
 //		for(int b = 0; b < back.Length; b++)
 //		{
 //			float dist = Vector3.Distance (newSpheres [back [b]].transform.localPosition, newSpheres [back [12]].transform.localPosition);
@@ -288,107 +261,106 @@ public class CharacterMesh : MonoBehaviour {
 
 	void Update()
 	{
-
+		
 
 		UpdateMesh ();
-
-		//ClearAll();
-		//CreateMesh ();
+		//updateSides ();
 
 
-		if (moveState) 
-		{
-			for (int i = 0; i < 25; i++) 
-			{
-				//fbmove (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
-				//fbmove (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
 
-				//lrmove (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-				//lrmove (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+//		if (moveState) 
+//		{
+//			for (int i = 0; i < 25; i++) 
+//			{
+//				//AnimateFB (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
+//				//AnimateFB (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
+//
+//				//AnimateLR (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
+//				//AnimateLR (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+//
+//				//newSpheres [left [i]].transform.Translate(0.01f, 0.0f, 0.0f);
+//				//newSpheres [right [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
+//			}
+//		}
+//		if (reverseState) 
+//		{
+//			for (int i = 0; i < 25; i++) 
+//			{
+//				//ReverseAnimateFB (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
+//				//ReverseAnimateFB (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
+//				//ReverseAnimateLR (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
+//				//ReverseAnimateLR (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
+//
+//				//newSpheres [left [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
+//				//newSpheres [right [i]].transform.Translate(0.01f, 0.0f, 0.0f);
+//
+//			}
+//		}
+//
+//
+//		if (spreadState) 
+//		{
+//			spreadCount += 1.0f * Time.deltaTime;
+//			if (spreadCount > 4.0f) {
+//
+//				spreadCount = 0;
+//
+//				moveState = false;
+//				reverseState = false;
+//				spreadState = false;
+//			}
+//
+//		}
+//
+//		if (Input.GetKeyDown ("space")) {
+//
+//			spreadState = true;
+//			moveState = !moveState;
+//
+//		}
+//		if (Input.GetKeyDown ("r")) {
+//
+//			spreadState = true;
+//			reverseState = !reverseState;
+//
+//		}
+//
 
-				//newSpheres [left [i]].transform.Translate(0.01f, 0.0f, 0.0f);
-				//newSpheres [right [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
-			}
-		}
-		if (reverseState) 
-		{
-			for (int i = 0; i < 25; i++) 
-			{
-				//fbmoveReverse (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
-				//fbmoveReverse (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
-				//lrmoveReverse (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-				//lrmoveReverse (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
-
-				//newSpheres [left [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
-				//newSpheres [right [i]].transform.Translate(0.01f, 0.0f, 0.0f);
-
-			}
-		}
-
-
-		if (spreadState) 
-		{
-			spreadCount += 1.0f * Time.deltaTime;
-			if (spreadCount > 4.0f) {
-
-				spreadCount = 0;
-
-				moveState = false;
-				reverseState = false;
-				spreadState = false;
-			}
-
-		}
-
-		if (Input.GetKeyDown ("space")) {
-
-			spreadState = true;
-			moveState = !moveState;
-
-		}
-		if (Input.GetKeyDown ("r")) {
-
-			spreadState = true;
-			reverseState = !reverseState;
-
-		}
-
-
-		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-
-			rightLeftPos += 1.0f;
-			//updateLeftRightWings ();
-			for(int i = 0; i < left.Length; i++)
-			{
-				newSpheres [left[i]].transform.localPosition = new Vector3( 
-					newSpheres [left[i]].transform.localPosition.x,
-					newSpheres [left[i]].transform.localPosition.y,
-					newSpheres [left[i]].transform.localPosition.z + 1.0f);
-
-				newSpheres [right[i]].transform.localPosition = new Vector3( 
-					newSpheres [right[i]].transform.localPosition.x,
-					newSpheres [right[i]].transform.localPosition.y,
-					newSpheres [right[i]].transform.localPosition.z + 1.0f);
-			}
-
-		}
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			rightLeftPos -= 1.0f;
-
-			for(int i = 0; i < left.Length; i++)
-			{
-				newSpheres [left[i]].transform.localPosition = new Vector3( 
-					newSpheres [left[i]].transform.localPosition.x,
-					newSpheres [left[i]].transform.localPosition.y,
-					newSpheres [left[i]].transform.localPosition.z - 1.0f);
-
-				newSpheres [right[i]].transform.localPosition = new Vector3( 
-					newSpheres [right[i]].transform.localPosition.x,
-					newSpheres [right[i]].transform.localPosition.y,
-					newSpheres [right[i]].transform.localPosition.z - 1.0f);
-			}
-
-		}
+//		if (Input.GetKeyDown (KeyCode.RightArrow)) {
+//
+//			rightLeftPos += 1.0f;
+//			//updateLeftRightWings ();
+//			for(int i = 0; i < left.Length; i++)
+//			{
+//				newSpheres [left[i]].transform.localPosition = new Vector3( 
+//					newSpheres [left[i]].transform.localPosition.x,
+//					newSpheres [left[i]].transform.localPosition.y,
+//					newSpheres [left[i]].transform.localPosition.z + 1.0f);
+//
+//				newSpheres [right[i]].transform.localPosition = new Vector3( 
+//					newSpheres [right[i]].transform.localPosition.x,
+//					newSpheres [right[i]].transform.localPosition.y,
+//					newSpheres [right[i]].transform.localPosition.z + 1.0f);
+//			}
+//
+//		}
+//		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+//			rightLeftPos -= 1.0f;
+//
+//			for(int i = 0; i < left.Length; i++)
+//			{
+//				newSpheres [left[i]].transform.localPosition = new Vector3( 
+//					newSpheres [left[i]].transform.localPosition.x,
+//					newSpheres [left[i]].transform.localPosition.y,
+//					newSpheres [left[i]].transform.localPosition.z - 1.0f);
+//
+//				newSpheres [right[i]].transform.localPosition = new Vector3( 
+//					newSpheres [right[i]].transform.localPosition.x,
+//					newSpheres [right[i]].transform.localPosition.y,
+//					newSpheres [right[i]].transform.localPosition.z - 1.0f);
+//			}
+//
+//		}
 
 
 
@@ -405,6 +377,38 @@ public class CharacterMesh : MonoBehaviour {
 		normals = null;
 		uv = null;
 
+	}
+
+
+	void UpdateVertices()
+	{
+		//		for(int i = 0; i < vertices.Length; i++)
+		//		{
+		//			vertices [i] = newSpheres [i].transform.localPosition ;
+		//		}
+
+		for (int i = 0; i < 25; i++) {
+			vertices [left [i]] = newSpheres [left [i]].transform.localPosition +  leftParent.transform.localPosition;
+			vertices [right [i]] = newSpheres [right [i]].transform.localPosition +  rightParent.transform.localPosition;
+			vertices [front [i]] = newSpheres [front [i]].transform.localPosition +  frontParent.transform.localPosition;
+			vertices [back [i]] = newSpheres [back [i]].transform.localPosition +  backParent.transform.localPosition;
+		}
+
+
+		for (int j = 0; j < 160; j++) {
+			vertices [top [j]] = newSpheres [top [j]].transform.localPosition +  topParent.transform.localPosition;
+			vertices [bottom [j]] = newSpheres [bottom [j]].transform.localPosition +  bottomParent.transform.localPosition;
+
+//			vertices [bottom[j]] = new Vector3( 
+//				newSpheres [bottom [j]].transform.localPosition.x +  bottomParent.transform.localPosition.x,
+//				newSpheres [bottom [120]].transform.localPosition.y +  bottomParent.transform.localPosition.y,
+//				newSpheres [bottom [j]].transform.localPosition.z +  bottomParent.transform.localPosition.z);
+//
+//			vertices [top[j]] = new Vector3( 
+//				newSpheres [top [j]].transform.localPosition.x +  topParent.transform.localPosition.x,
+//				newSpheres [top [120]].transform.localPosition.y +  topParent.transform.localPosition.y,
+//				newSpheres [top [j]].transform.localPosition.z +  topParent.transform.localPosition.z);
+		}
 
 	}
 
@@ -426,12 +430,7 @@ public class CharacterMesh : MonoBehaviour {
 		mesh.Clear();
 
 
-		for(int i = 0; i < vertices.Length; i++)
-		{
-			vertices [i] = newSpheres [i].transform.localPosition;
-		}
-	
-
+		UpdateVertices ();
 		CreateTriangles();
 
 		mesh.vertices = vertices;
@@ -481,9 +480,6 @@ public class CharacterMesh : MonoBehaviour {
 		mesh.RecalculateBounds();
 		mesh.Optimize();
 
-		//CreateCollider();
-		//CreateColorAndtexture ();
-
 	}
 
 
@@ -514,8 +510,7 @@ public class CharacterMesh : MonoBehaviour {
 			for (int x = xSize - 1; x >= 0; x--) {
 				SetVertex(v++, x, y, zSize);
 			}
-
-			//
+				
 			for (int z = zSize - 1; z > 0; z--) {
 				SetVertex(v++, 0, y, z);
 			}
@@ -535,7 +530,6 @@ public class CharacterMesh : MonoBehaviour {
 				SetVertex(v++, x, 0, z);
 			}
 		}
-
 
 
 	}
@@ -658,13 +652,12 @@ public class CharacterMesh : MonoBehaviour {
 
 	}
 
-
-
 	private void CreateRigidBody(){
 		meshRigidBody = GetComponent (typeof(Rigidbody)) as Rigidbody;
-		meshRigidBody.isKinematic = true;
+		//meshRigidBody.isKinematic = true;
 		meshRigidBody.useGravity = true;
 	}
+
 	private void CreateColorAndtexture() {
 
 		meshRenderer = GetComponent<MeshRenderer>();
