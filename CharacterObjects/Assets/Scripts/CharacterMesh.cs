@@ -14,23 +14,21 @@ public class CharacterMesh : MonoBehaviour {
 //	private RaycastHit hit;
 //	private GameObject hitObject = null;
 
-	GameObject topParent = null;
-	GameObject bottomParent = null;
-	GameObject rightParent = null;
-	GameObject leftParent = null;
-	GameObject frontParent = null;
-	GameObject backParent = null;
+	private GameObject topParent = null;
+	private GameObject bottomParent = null;
+	private GameObject rightParent = null;
+	private GameObject leftParent = null;
+	private GameObject frontParent = null;
+	private GameObject backParent = null;
+	private GameObject frontStrechParent = null;
+	private GameObject backStrechParent = null;
 
 	public GameObject sphere;
 	private int currentSphereIndex = 0;
 	private List <GameObject> newSpheres = new List<GameObject>();
 
-	private float rightLeftWings = 0.0f; 
-
-	private float spreadCount = 0;
-	private bool spreadState =false;
-	private bool moveState = false;
-	private bool reverseState = false;
+	private int animateCount = 0;
+	private string moveState = "idle";
 
 	private int xSize = 10;
 	private int ySize = 10;
@@ -38,11 +36,22 @@ public class CharacterMesh : MonoBehaviour {
 	[Range(0,6)]public int roundness = 5;
 
 	List <int> top = new List<int>(); 
+	private float topChanger = 0;
+
 	List <int> bottom = new List<int>(); 
-	int[] left = new int[]{};
-	int[] right = new int[]{};
-	int[] front = new int[]{};
-	int[] back = new int[]{};
+	private float bottomChanger = 0;
+
+
+	private float carId = 0;
+	private float airplaneId = 0;
+	private float nasaId = 0;
+
+	private int[] left = new int[]{};
+	private int[] right = new int[]{};
+	private int[] front = new int[]{};
+	private int[] back = new int[]{};
+	private int[] frontStretch = new int[]{};
+	private int[] backStretch = new int[]{};
 
 	private Rigidbody meshRigidBody; 
 	//private MeshCollider meshCollider; 
@@ -71,7 +80,7 @@ public class CharacterMesh : MonoBehaviour {
 		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
 		a.name = "Cube" + Id;
 		a.transform.localScale = new Vector3 (0.4f, 0.4f, 0.4f);
-		a.GetComponent<Renderer> ().material.color = Color.red;
+		//a.GetComponent<Renderer> ().material.color = Color.red;
 		a.transform.parent = this.transform;
 		objectArr.Add (a);
 
@@ -100,8 +109,7 @@ public class CharacterMesh : MonoBehaviour {
 
 		AddSpheres ();
 		GetSides ();
-		IdSpheres ();
-
+		SpheresID ();
 
 	}
 
@@ -115,60 +123,135 @@ public class CharacterMesh : MonoBehaviour {
 
 	void GetSides()
 	{
-		front = new int[]{
-			303,304,305,306,307,
-			263,264,265,266,267,
-			223,224,225,226,227,
-			183,184,185,186,187,
-			143,144,145,146,147
+		//front
+		front = new int[] {
+			303, 304, 305, 306, 307,
+			263, 264, 265, 266, 267,
+			223, 224, 225, 226, 227,
+			183, 184, 185, 186, 187,
+			143, 144, 145, 146, 147
 		};
 
-		back = new int[]{
-			283,284,285,286,287,
-			243,244,245,246,247,
-			203,204,205,206,207,
-			163,164,165,166,167,
-			123,124,125,126,127
+		// back
+		back = new int[] {
+			283, 284, 285, 286, 287,
+			243, 244, 245, 246, 247,
+			203, 204, 205, 206, 207,
+			163, 164, 165, 166, 167,
+			123, 124, 125, 126, 127
 		};
 
-		right = new int[]{
-			293,294,295,296,297,
-			253,254,255,256,257,
-			213,214,215,216,217,
-			173,174,175,176,177,
-			133,134,135,136,137
+
+		//right
+		right = new int[] {
+			293, 294, 295, 296, 297,
+			253, 254, 255, 256, 257,
+			213, 214, 215, 216, 217,
+			173, 174, 175, 176, 177,
+			133, 134, 135, 136, 137
 		};
 
-		left = new int[]{
-			313,314,315,316,317,
-			273,274,275,276,277,
-			233,234,235,236,237,
-			193,194,195,196,197,
-			153,154,155,156,157
+		//left
+		left = new int[] {
+			313, 314, 315, 316, 317,
+			273, 274, 275, 276, 277,
+			233, 234, 235, 236, 237,
+			193, 194, 195, 196, 197,
+			153, 154, 155, 156, 157
 		};
 
+
+		///top
 		for (int t = 360; t < 521; t++) {
-			top.Add(t);
+			top.Add (t);
 		}
+
+
+		//bottom
 		for (int b = 0; b < 80; b++) {
-			bottom.Add(b);
+			bottom.Add (b);
 		}
 		for (int b2 = 521; b2 < 602; b2++) {
-			bottom.Add(b2);
+			bottom.Add (b2);
 		}
-			
+
+		frontStretch = new int[] {
+			96, 97, 98, 99, 100,
+			101, 102, 103, 104, 105,
+			106, 107, 108, 109, 110,
+			111, 112, 113, 114, 115,
+
+			138, 139, 140, 141, 142,
+			148, 149, 150, 151, 152,
+
+			178, 179, 180, 181, 182,
+			188, 189, 190, 191, 192,
+
+			218, 219, 220, 221, 222,
+			228, 229, 230, 231, 232,
+
+			258, 259, 260, 261, 262,
+			268, 269, 270, 271, 272,
+
+			298, 299, 300, 301, 302,
+			308, 309, 310, 311, 312,
+
+			336, 337, 338, 339, 340,
+			341, 342, 343, 344, 345,
+			346, 347, 348, 349, 350,
+			351, 352, 353, 354, 355,
+
+		};
+
+
+		backStretch = new int[]{ 
+		
+			80,81,82,83,84,
+			85,86,87,88,89,
+			90,91,92,93,94,
+			95,
+			116,117,118,119,120,
+			121,122,128,129,130,
+			131,132,158,159,160,
+			161,162,168,169,170,
+			171,172,198,199,200,
+			201,202,208,209,210,
+			211,212,238,239,240,
+			241,242,248,249,250,
+			251,252,278,279,280,
+			281,282,288,289,290,
+			291,292,318,319,
+			320,321,322,323,324,
+			325,326,327,328,329,
+			330,331,332,333,334,
+			335,356,357,358,359
+		
+		};
 	}
 
 
-	void IdSpheres ()
+	void SpheresID ()
 	{
+
+
 		topParent = createParent(newSpheres [top [120]].transform.localPosition, "top");
 		bottomParent = createParent(newSpheres [bottom [120]].transform.localPosition, "bottom");
 		leftParent = createParent(newSpheres [left [12]].transform.localPosition, "left");
 		rightParent = createParent(newSpheres [right [12]].transform.localPosition, "right");
 		frontParent = createParent(newSpheres [front [12]].transform.localPosition, "front");
 		backParent = createParent(newSpheres [back [12]].transform.localPosition, "back");
+		frontStrechParent = createParent(newSpheres [front [12]].transform.localPosition, "front Strech");
+		backStrechParent = createParent(newSpheres [back [12]].transform.localPosition, "back Strech");
 
+		foreach (int fs in frontStretch) {
+			newSpheres [fs].transform.parent = frontStrechParent.transform;
+			newSpheres [fs].GetComponent<Renderer> ().material.color = Color.grey;
+		}
+
+		foreach (int bs in backStretch) {
+			newSpheres [bs].transform.parent = backStrechParent.transform;
+			newSpheres [bs].GetComponent<Renderer> ().material.color = Color.red;
+		}
 		foreach (int t in top) 
 		{
 			newSpheres [t].transform.parent = topParent.transform;
@@ -179,6 +262,7 @@ public class CharacterMesh : MonoBehaviour {
 		{
 			newSpheres [b].transform.parent = bottomParent.transform;
 			newSpheres [b].GetComponent<Renderer> ().material.color = Color.black;
+
 		}
 
 		for(int i = 0; i < 25; i++)
@@ -206,7 +290,7 @@ public class CharacterMesh : MonoBehaviour {
 	//// animate left and right
 	void AnimateLR(Transform me, Vector3 target)
 	{
-		me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+		//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -214,7 +298,7 @@ public class CharacterMesh : MonoBehaviour {
 	}
 	void ReverseAnimateLR(Transform me, Vector3 target)
 	{
-				me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
 		//		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 		//		me.Translate(-((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 		//		me.Translate(0.0f, -((target.y - me.position.y) / 100.0f), 0.0f);
@@ -222,10 +306,22 @@ public class CharacterMesh : MonoBehaviour {
 	}
 
 
-	//// animate front and back
-	void AnimateFB(Transform me, Vector3 target)
+	//// animate front
+	void AnimateFront(Transform me, Vector3 target)
 	{
-		//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+		
+		//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.02f);
+		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+		//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
+		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
+		//me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+
+	}
+	//animate back
+	void AnimateBack(Transform me, Vector3 target)
+	{
+
+		//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), -0.02f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
 		//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 		//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -234,7 +330,8 @@ public class CharacterMesh : MonoBehaviour {
 	}
 	void ReverseAnimateFB(Transform me, Vector3 target)
 	{
-//		me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
+		
+		//me.Translate(- ((target.x - me.position.x) / 100.0f), - ((target.y - me.position.y) / 100.0f), 0.0f);
 //		me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 //		me.Translate(-((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 //		me.Translate(0.0f, -((target.y - me.position.y) / 100.0f), 0.0f);
@@ -258,73 +355,254 @@ public class CharacterMesh : MonoBehaviour {
 //		}
 	}
 
-
-	void Update()
+	void CarAnimation()
 	{
 		
+		if (moveState == "car") 
+		{
+			float topValue = 0;
+			float bottomValue = -2;
+
+			if (carId < 1.0f) {
+
+				carId += Time.deltaTime * (1.0f / 10.0f);
+			} else {
+
+				//topIdd = 0;
+				animateCount = 1;
+				moveState = "idle";
+			} 
+			topChanger =  Mathf.Lerp (0, topValue, carId);
+			bottomChanger =  Mathf.Lerp (0, bottomValue, carId);
+
+			for (int i = 0; i < 25; i++) 
+			{
+				newSpheres [front [i]].transform.Translate(
+					-((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
+					-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 1600.0f), 
+					0.0f);
+
+				newSpheres [back [i]].transform.Translate(
+					-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
+					((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 500.0f), 
+					-0.008f);
+				
+				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(-((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+
+			}
+
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, -1.0f, carId);
+
+			float backY = Mathf.Lerp (backParent.transform.localPosition.y, 4.5f, carId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, carId);
+
+			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 9.5f, carId);
+			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, 0.5f, carId);
+			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, carId);
+
+			frontParent.transform.localPosition =  new Vector3 (frontParent.transform.localPosition.x,frontParent.transform.localPosition.y,frontZ);
+			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backY, backZ);
+			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, leftParent.transform.localPosition.z);
+			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, rightParent.transform.localPosition.z);
+			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
+
+		}
+
+
+	}
+	void PlaneAnimation()
+	{
+		if (moveState == "airplane") {
+
+			float topValue = 0;
+			float bottomValue = -3;
+
+			if (airplaneId < 1.0f) {
+
+				airplaneId += Time.deltaTime * (1.0f / 10.0f);
+			} else {
+
+				animateCount = 2;
+				moveState = "idle";
+			} 
+
+			topChanger =  Mathf.Lerp (0, topValue, airplaneId);
+			bottomChanger =  Mathf.Lerp (bottomChanger, bottomValue, airplaneId);
+
+			for (int i = 0; i < 25; i++) 
+			{
+//				newSpheres [left [i]].transform.Translate(
+//					((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 300.0f), 
+//					((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 300.0f), 
+//					0.00f);
+//
+//				newSpheres [right [i]].transform.Translate(
+//					((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 300.0f), 
+//					((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 300.0f), 
+//					0.0f);
+//
+//
+//
+//				newSpheres [front [i]].transform.Translate(
+//					((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
+//					((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
+//					0.0f);
+//
+//				newSpheres [back [i]].transform.Translate(
+//					((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
+//					-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
+//					0.002f);
+//
+
+				//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), -((target.z - me.position.z) / 100.0f));
+
+			}
+
+
+			float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.5f, airplaneId);
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 11.0f, airplaneId);
+
+
+			float backY = Mathf.Lerp (backParent.transform.localPosition.y, 5.0f, airplaneId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -6.0f, airplaneId);
+
+			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, airplaneId);
+			float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -2.0f, airplaneId);
+
+
+			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 2.0f, airplaneId);
+			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, airplaneId);
+			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, airplaneId);
+
+			frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontY, frontZ);
+			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backY, backZ);
+
+			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, LeftRightZ);
+			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, LeftRightZ);
+
+
+			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
+			backStrechParent.transform.localPosition = new Vector3 ( backStrechParent.transform.localPosition.x, backStrechParent.transform.localPosition.y, backStretchZ);
+
+
+		}
+	}
+	void NasaPlaneAnimation()
+	{
+		if (moveState == "nasa") {
+
+			float topValue = -2;
+			float bottomValue = -3;
+
+			if (nasaId < 1.0f) {
+
+				nasaId += Time.deltaTime * (1.0f / 10.0f);
+			} else {
+				
+				animateCount = 3;
+				moveState = "idle";
+			} 
+
+			topChanger =  Mathf.Lerp (0, topValue, nasaId);
+			bottomChanger =  Mathf.Lerp (bottomChanger, bottomValue, nasaId);
+
+			for (int i = 0; i < 25; i++) 
+			{
+				newSpheres [left [i]].transform.Translate(
+					((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 300.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 300.0f), 
+					0.00f);
+
+				newSpheres [right [i]].transform.Translate(
+					((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 300.0f), 
+					((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 300.0f), 
+					0.0f);
+
+
+
+				newSpheres [front [i]].transform.Translate(
+					((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
+					((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
+					0.0f);
+
+				newSpheres [back [i]].transform.Translate(
+					((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
+					-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
+					0.002f);
+
+
+				//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), -((target.z - me.position.z) / 100.0f));
+
+			}
+
+			//stretch y
+			foreach(int bs in backStretch)
+			{
+				newSpheres [bs].transform.Translate (
+					0.0f, 
+					((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 300.0f), 
+					0.0f);
+			}
+			foreach(int fs in frontStretch)
+			{
+				newSpheres [fs].transform.Translate (
+					0.0f, 
+					((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 300.0f), 
+					0.0f);
+			}
+
+			float frontBackY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.0f, nasaId);
+			float frontZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, nasaId);
+			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 2.0f, nasaId);
+			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -2.0f, nasaId);
+			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 12.0f, nasaId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, nasaId);
+
+			frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontBackY, frontParent.transform.localPosition.z);
+			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
+			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, LeftRightZ);
+			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, LeftRightZ);
+			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontZ);
+
+
+
+		}
+	}
+	void Update()
+	{
+
 
 		UpdateMesh ();
-		//updateSides ();
+
+		CarAnimation ();
+		PlaneAnimation ();
+		NasaPlaneAnimation ();
+		if (Input.GetKeyDown ("space")) {
+
+			if (animateCount == 0 && moveState == "idle") {
+				moveState = "car"; 
+			}
+			if (animateCount == 1 && moveState == "idle") {
+				moveState = "airplane"; 
+			}
+			if (animateCount == 2 && moveState == "idle") {
+				moveState = "nasa"; 
+			}
+			print("moveState:  "+ moveState+"   count: "+animateCount);
+		}
 
 
-
-//		if (moveState) 
-//		{
-//			for (int i = 0; i < 25; i++) 
-//			{
-//				//AnimateFB (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
-//				//AnimateFB (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
-//
-//				//AnimateLR (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-//				//AnimateLR (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
-//
-//				//newSpheres [left [i]].transform.Translate(0.01f, 0.0f, 0.0f);
-//				//newSpheres [right [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
-//			}
-//		}
-//		if (reverseState) 
-//		{
-//			for (int i = 0; i < 25; i++) 
-//			{
-//				//ReverseAnimateFB (newSpheres [back [i]].transform, newSpheres [back [12]].transform.localPosition);
-//				//ReverseAnimateFB (newSpheres [front [i]].transform, newSpheres [front [12]].transform.localPosition);
-//				//ReverseAnimateLR (newSpheres [left [i]].transform, newSpheres [left [12]].transform.localPosition);
-//				//ReverseAnimateLR (newSpheres [right [i]].transform, newSpheres [right [12]].transform.localPosition);
-//
-//				//newSpheres [left [i]].transform.Translate(-0.01f, 0.0f, 0.0f);
-//				//newSpheres [right [i]].transform.Translate(0.01f, 0.0f, 0.0f);
-//
-//			}
-//		}
-//
-//
-//		if (spreadState) 
-//		{
-//			spreadCount += 1.0f * Time.deltaTime;
-//			if (spreadCount > 4.0f) {
-//
-//				spreadCount = 0;
-//
-//				moveState = false;
-//				reverseState = false;
-//				spreadState = false;
-//			}
-//
-//		}
-//
-//		if (Input.GetKeyDown ("space")) {
-//
-//			spreadState = true;
-//			moveState = !moveState;
-//
-//		}
-//		if (Input.GetKeyDown ("r")) {
-//
-//			spreadState = true;
-//			reverseState = !reverseState;
-//
-//		}
-//
 
 //		if (Input.GetKeyDown (KeyCode.RightArrow)) {
 //
@@ -395,19 +673,19 @@ public class CharacterMesh : MonoBehaviour {
 		}
 
 
-		for (int j = 0; j < 160; j++) {
-			vertices [top [j]] = newSpheres [top [j]].transform.localPosition +  topParent.transform.localPosition;
-			vertices [bottom [j]] = newSpheres [bottom [j]].transform.localPosition +  bottomParent.transform.localPosition;
+		for (int j = 0; j < 161; j++) {
+			topParent.transform.localPosition = vertices [top [120]] ;
+			bottomParent.transform.localPosition = vertices [bottom [120]] ;
 
-//			vertices [bottom[j]] = new Vector3( 
-//				newSpheres [bottom [j]].transform.localPosition.x +  bottomParent.transform.localPosition.x,
-//				newSpheres [bottom [120]].transform.localPosition.y +  bottomParent.transform.localPosition.y,
-//				newSpheres [bottom [j]].transform.localPosition.z +  bottomParent.transform.localPosition.z);
-//
-//			vertices [top[j]] = new Vector3( 
-//				newSpheres [top [j]].transform.localPosition.x +  topParent.transform.localPosition.x,
-//				newSpheres [top [120]].transform.localPosition.y +  topParent.transform.localPosition.y,
-//				newSpheres [top [j]].transform.localPosition.z +  topParent.transform.localPosition.z);
+			//vertices [top [j]] = newSpheres [top [j]].transform.localPosition +  topParent.transform.localPosition;
+			//vertices [bottom [j]] = newSpheres [bottom [j]].transform.localPosition +  bottomParent.transform.localPosition;
+		}
+
+		foreach (int fs in frontStretch) {
+			vertices [fs] = newSpheres [fs].transform.localPosition  +  frontStrechParent.transform.localPosition;
+		}
+		foreach (int bs in backStretch) {
+			vertices [bs] = newSpheres [bs].transform.localPosition  +  backStrechParent.transform.localPosition;
 		}
 
 	}
@@ -430,6 +708,8 @@ public class CharacterMesh : MonoBehaviour {
 		mesh.Clear();
 
 
+
+		CreateVertices ();
 		UpdateVertices ();
 		CreateTriangles();
 
@@ -536,22 +816,35 @@ public class CharacterMesh : MonoBehaviour {
 	private void SetVertex (int i, int x, int y, int z) {
 		Vector3 inner = vertices[i] = new Vector3(x, y, z);
 
+
+		////sides
 		if (x < roundness) {
 			inner.x = roundness;
 		}
 		else if (x > xSize - roundness) {
 			inner.x = xSize - roundness;
 		}
+
+		////top and bottom
 		if (y < roundness) {
-			inner.y = roundness;
+
+			// bottom rounder
+			inner.y = roundness - bottomChanger;
 		}
-		else if (y > ySize - roundness) {
-			inner.y = ySize - roundness;
+		else if (y > ySize - roundness) 
+		{
+			// top rounder
+			inner.y = ySize - (roundness - topChanger);
 		}
+
+		////front and back
 		if (z < roundness) {
+
+			//front rounder
 			inner.z = roundness;
 		}
 		else if (z > zSize - roundness) {
+			//back rounder
 			inner.z = zSize - roundness;
 		}
 
@@ -661,6 +954,10 @@ public class CharacterMesh : MonoBehaviour {
 	private void CreateColorAndtexture() {
 
 		meshRenderer = GetComponent<MeshRenderer>();
+
+		//Material material = new Material (Shader.Find ("Standard"));
+		//material.color = Color.red;
+
 
 		Texture[] textures = new Texture[] {
 
