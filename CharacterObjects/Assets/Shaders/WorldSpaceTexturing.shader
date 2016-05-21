@@ -45,8 +45,8 @@ Shader ".ShaderExample/WorldSpaceTexturing"
 			fixed4 c1 = tex2D(_MainTex1, IN.worldPos.xy/scale);
 			fixed4 c2 = tex2D(_MainTex2, IN.worldPos.zy/scale);
  
-			fixed3 nWNormal = normalize(IN.worldNormal*fixed3(_NX, _NY, _NZ));
-			fixed3 projnormal = saturate(pow(nWNormal*1.5, 4));
+			fixed3 nWNormal = normalize(IN.worldNormal * fixed3(_NX, _NY, _NZ));
+			fixed3 projnormal = saturate(pow(nWNormal * 1.5, 4));
  
 			half4 result = lerp(c, c1, projnormal.z);
 			result = lerp(result, c2, projnormal.x);

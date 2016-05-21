@@ -20,7 +20,7 @@ public class Skybox : MonoBehaviour {
 	{
 		Material result = new Material (Shader.Find (".ShaderExample/GradientThreeColor"));
 
-		result.SetFloat ("_Middle", 0.6f);
+		result.SetFloat ("_Middle", 0.4f);
 		result.SetColor("_ColorTop", topColor);
 		result.SetColor("_ColorMid",middleColor);
 		result.SetColor("_ColorBot", bottomColor);
@@ -100,7 +100,7 @@ public class Skybox : MonoBehaviour {
 
 		//print("time: "+t+" duration:  "+ duration);
 
-		Material material = CreateGradientMaterial(Color.black,Color.black, one);
+		Material material = CreateGradientMaterial(one,one,Color.black);
 		SetSkybox(material);
 		//enabled = false;
 
