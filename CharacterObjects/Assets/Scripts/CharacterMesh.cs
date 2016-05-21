@@ -44,6 +44,7 @@ public class CharacterMesh : MonoBehaviour {
 
 	private float carId = 0;
 	private float airplaneId = 0;
+	private float jetId = 0;
 	private float nasaId = 0;
 
 	private int[] left = new int[]{};
@@ -382,11 +383,7 @@ public class CharacterMesh : MonoBehaviour {
 					-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 1600.0f), 
 					0.0f);
 
-				newSpheres [back [i]].transform.Translate(
-					-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
-					((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 500.0f), 
-					-0.008f);
-				
+
 				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
 				//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
 				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -394,20 +391,22 @@ public class CharacterMesh : MonoBehaviour {
 
 			}
 
-			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, -1.0f, carId);
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 12.0f, carId);
 
-			float backY = Mathf.Lerp (backParent.transform.localPosition.y, 4.5f, carId);
+			float backY = Mathf.Lerp (backParent.transform.localPosition.y, 5.0f, carId);
 			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, carId);
 
 			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 9.5f, carId);
 			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, 0.5f, carId);
 			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, carId);
+			float bachStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -0.60f, carId);
 
 			frontParent.transform.localPosition =  new Vector3 (frontParent.transform.localPosition.x,frontParent.transform.localPosition.y,frontZ);
 			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backY, backZ);
 			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, leftParent.transform.localPosition.z);
 			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, rightParent.transform.localPosition.z);
 			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
+			backStrechParent.transform.localPosition = new Vector3 ( backStrechParent.transform.localPosition.x, backStrechParent.transform.localPosition.y, bachStretchZ);
 
 		}
 
@@ -443,19 +442,19 @@ public class CharacterMesh : MonoBehaviour {
 //					((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 300.0f), 
 //					((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 300.0f), 
 //					0.0f);
+
 //
 //
-//
-//				newSpheres [front [i]].transform.Translate(
-//					((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
-//					((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
-//					0.0f);
-//
-//				newSpheres [back [i]].transform.Translate(
-//					((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
-//					-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
-//					0.002f);
-//
+				newSpheres [front [i]].transform.Translate(
+					((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
+					((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 500.0f), 
+					0.0f);
+
+				newSpheres [back [i]].transform.Translate(
+					((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
+					-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
+					0.0f);
+
 
 				//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
 				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
@@ -467,17 +466,17 @@ public class CharacterMesh : MonoBehaviour {
 
 
 			float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.5f, airplaneId);
-			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 11.0f, airplaneId);
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 12.0f, airplaneId);
 
 
 			float backY = Mathf.Lerp (backParent.transform.localPosition.y, 5.0f, airplaneId);
-			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -6.0f, airplaneId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -10.0f, airplaneId);
 
 			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, airplaneId);
 			float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -2.0f, airplaneId);
 
 
-			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 2.0f, airplaneId);
+			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 4.0f, airplaneId);
 			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, airplaneId);
 			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, airplaneId);
 
@@ -494,24 +493,24 @@ public class CharacterMesh : MonoBehaviour {
 
 		}
 	}
-	void NasaPlaneAnimation()
+	void JetAnimation()
 	{
-		if (moveState == "nasa") {
+		if (moveState == "jet") {
 
-			float topValue = -2;
-			float bottomValue = -3;
+			float topValue = - 1.5f;
+			float bottomValue = - 3.2f;
 
-			if (nasaId < 1.0f) {
+			if (jetId < 1.0f) {
 
-				nasaId += Time.deltaTime * (1.0f / 10.0f);
+				jetId += Time.deltaTime * (1.0f / 10.0f);
 			} else {
 				
 				animateCount = 3;
 				moveState = "idle";
 			} 
 
-			topChanger =  Mathf.Lerp (0, topValue, nasaId);
-			bottomChanger =  Mathf.Lerp (bottomChanger, bottomValue, nasaId);
+			topChanger =  Mathf.Lerp (0, topValue, jetId);
+			bottomChanger =  Mathf.Lerp (bottomChanger, bottomValue, jetId);
 
 			for (int i = 0; i < 25; i++) 
 			{
@@ -533,9 +532,9 @@ public class CharacterMesh : MonoBehaviour {
 					0.0f);
 
 				newSpheres [back [i]].transform.Translate(
-					((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
-					-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
-					0.002f);
+					-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 1000.0f), 
+					((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 300.0f), 
+					0.0f);
 
 
 				//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
@@ -551,34 +550,127 @@ public class CharacterMesh : MonoBehaviour {
 			{
 				newSpheres [bs].transform.Translate (
 					0.0f, 
-					((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 300.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 500.0f), 
 					0.0f);
 			}
 			foreach(int fs in frontStretch)
 			{
 				newSpheres [fs].transform.Translate (
 					0.0f, 
-					((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 300.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 500.0f), 
 					0.0f);
 			}
 
-			float frontBackY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.0f, nasaId);
-			float frontZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, nasaId);
-			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 2.0f, nasaId);
-			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -2.0f, nasaId);
-			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 12.0f, nasaId);
-			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, nasaId);
+			float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.0f, jetId);
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 12.0f, jetId);
+			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 1.0f, jetId);
+			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -2.0f, jetId);
+			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 12.0f, jetId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -5.0f, jetId);
+			float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -1.0f, jetId);
+			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 12.0f, jetId);
 
-			frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontBackY, frontParent.transform.localPosition.z);
+			frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontY, frontZ);
 			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
 			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, LeftRightZ);
 			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, LeftRightZ);
-			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontZ);
+			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
+			backStrechParent.transform.localPosition = new Vector3 ( backStrechParent.transform.localPosition.x, backStrechParent.transform.localPosition.y, backStretchZ);
 
 
 
 		}
 	}
+
+	void NasaPlaneAnimation()
+	{
+		if (moveState == "nasa") {
+
+			float topValue = - 2.5f;
+			float bottomValue = - 3.2f;
+
+			if (nasaId < 1.0f) {
+
+				nasaId += Time.deltaTime * (1.0f / 10.0f);
+			} else {
+
+				animateCount = 4;
+				moveState = "idle";
+			} 
+
+			topChanger =  Mathf.Lerp (topChanger, topValue, nasaId);
+			bottomChanger =  Mathf.Lerp (bottomChanger, bottomValue, nasaId);
+
+			for (int i = 0; i < 25; i++) 
+			{
+				newSpheres [left [i]].transform.Translate(
+					((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 400.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 400.0f), 
+					0.00f);
+
+				newSpheres [right [i]].transform.Translate(
+					((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 400.0f), 
+					((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 400.0f), 
+					0.0f);
+
+//
+//
+//				newSpheres [front [i]].transform.Translate(
+//					((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
+//					((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
+//					0.0f);
+//
+//				newSpheres [back [i]].transform.Translate(
+//					-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 1000.0f), 
+//					((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 300.0f), 
+//					0.0f);
+//
+//
+				//me.Translate(((target.x - me.position.x) / 100.0f), ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), -((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(((target.x - me.position.x) / 100.0f), 0.0f, 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), 0.0f);
+				//me.Translate(0.0f, ((target.y - me.position.y) / 100.0f), -((target.z - me.position.z) / 100.0f));
+
+			}
+
+			//stretch y
+			foreach(int bs in backStretch)
+			{
+				newSpheres [bs].transform.Translate (
+					((newSpheres [top [120]].transform.position.x - newSpheres [bs].transform.position.x) / 1000.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 1000.0f), 
+					0.0f);
+			}
+			foreach(int fs in frontStretch)
+			{
+				newSpheres [fs].transform.Translate (
+					((newSpheres [top [120]].transform.position.x - newSpheres [fs].transform.position.x) / 1000.0f), 
+					((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 1000.0f), 
+					0.0f);
+			}
+
+			float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.0f, nasaId);
+			float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 11.0f, nasaId);
+			float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 3.0f, nasaId);
+			float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, nasaId);
+			float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, nasaId);
+			float backZ = Mathf.Lerp (backParent.transform.localPosition.z, 0.0f, nasaId);
+			float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, 0.0f, nasaId);
+			float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 10.0f, nasaId);
+
+			frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontY, frontZ);
+			backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
+			leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, LeftRightZ);
+			rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, LeftRightZ);
+			frontStrechParent.transform.localPosition = new Vector3 ( frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
+			backStrechParent.transform.localPosition = new Vector3 ( backStrechParent.transform.localPosition.x, backStrechParent.transform.localPosition.y, backStretchZ);
+
+
+
+		}
+	}
+
 	void Update()
 	{
 
@@ -587,6 +679,7 @@ public class CharacterMesh : MonoBehaviour {
 
 		CarAnimation ();
 		PlaneAnimation ();
+		JetAnimation ();
 		NasaPlaneAnimation ();
 		if (Input.GetKeyDown ("space")) {
 
@@ -597,6 +690,9 @@ public class CharacterMesh : MonoBehaviour {
 				moveState = "airplane"; 
 			}
 			if (animateCount == 2 && moveState == "idle") {
+				moveState = "jet"; 
+			}
+			if (animateCount == 3 && moveState == "idle") {
 				moveState = "nasa"; 
 			}
 			print("moveState:  "+ moveState+"   count: "+animateCount);
