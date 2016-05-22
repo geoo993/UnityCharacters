@@ -38,17 +38,15 @@ public class Airplane1 : MonoBehaviour
 	float friction = 0.95f;
 	bool right = false;
 	bool left = false;
-	public float fuel = 20;
+	private float fuel = 20;
 
-	private bool carState = true;
+	public bool carState = true;
 
 	void Start() {
 
 		rigid = GetComponent<Rigidbody> ();
 		rigid.useGravity = false;
 		rigid.isKinematic = true;
-		transform.eulerAngles = new Vector3 (0, 0, 0);
-
 
 		groundtrigger = groundSens.GetComponent<SensorGround> ().triggered; 
 		sensorfront = frontSens.GetComponent<SensorFront> ().sensorFront;
@@ -118,6 +116,8 @@ public class Airplane1 : MonoBehaviour
 		{
 			CarMovement ();
 		}else{
+			rigid.useGravity = false;
+
 			// Turn variables to rotation and position of the object
 			rotationx = (int)transform.eulerAngles.x; 
 			rotationy = (int)transform.eulerAngles.y; 
