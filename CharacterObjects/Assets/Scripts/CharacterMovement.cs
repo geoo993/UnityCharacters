@@ -32,42 +32,62 @@ public class CharacterMovement : MonoBehaviour
 	public float rotationRate;
 	public float turnRotationAngle, turnRotationSeekSpeed;
 	private float rotationVelocity, groundAngleVelocity;
-	private float acceleration = 3000f;
-
 
 	private Rigidbody rigid; 
 	private CharacterMeshComplete craft;
 
-	private bool ballState, groundState, airSate;
+	public bool ballState, groundState, airSate;
+	public GameObject[] all = null;
+
+	private bool changeSpeed = false;
 
 	void Awake(){
 
 		craft = GetComponent<CharacterMeshComplete> ();
 		rigid = GetComponent<Rigidbody> ();
 	
+
+		for (int i = 0; i < 100; i++) {
+
+			Vector3 pos = new Vector3(Random.Range (-200.0f, 200.0f), Random.Range (2.0f, 10.0f),Random.Range (-200.0f, 200.0f));
+			GameObject a = (GameObject) Instantiate(all [Random.Range (0, all.Length - 1)], pos, Quaternion.identity);
+
+			Vector3 scale = new Vector3 (Random.Range (1.0f, 10.0f), Random.Range (1.0f, 10.0f), Random.Range (1.0f, 10.0f));
+			a.transform.localScale = scale;
+		}
+	
 	}
 
 	void Update () 
 	{
 
-		//VehicleTransition ();
-		//RigidBodyControl ();
+		VehicleTransition ();
+		RigidBodyControl ();
 
 	}
 
 	void FixedUpdate ()
 	{
-
-		//if (groundState) {
-			//GroundMovement ();
-			GroundHoveringMovement ();
-		//}
-	}
-	void VehicleTransition(){
-
 		if (ballState) {
 			BallMovement ();
 		}
+
+		if (groundState) {
+
+			GroundHoveringMovement ();
+		}
+
+	}
+	void VehicleTransition(){
+
+//		if (ballState) {
+//			BallMovement ();
+//		}
+//
+//		if (groundState) {
+//
+//			GroundHoveringMovement ();
+//		}
 
 		if (airSate) {
 			AirMovement ();
@@ -84,6 +104,7 @@ public class CharacterMovement : MonoBehaviour
 			ballState = false;
 			groundState = true;
 			airSate = false;
+			changeSpeed = true;
 
 		} else if (
 			(craft.moveState == "airplane" && craft.animateCount == 2) || (craft.moveState == "jet" && craft.animateCount == 4)||
@@ -101,15 +122,24 @@ public class CharacterMovement : MonoBehaviour
 	void RigidBodyControl(){
 
 
-		if ((craft.moveState == "car" && craft.animateCount == 1) || (craft.moveState == "airplane" && craft.animateCount == 3)) {
+		if ((craft.moveState == "ball" && craft.animateCount == 0) || (craft.moveState == "car" && craft.animateCount == 2)) {
+
 			rigid.useGravity = true;
 			rigid.isKinematic = false;
-			rigid.mass = 1000f;
+			rigid.mass = 1f;
 			rigid.drag = 1f;
 			rigid.angularDrag = 1f;
 
-		} else if (
-			(craft.moveState == "ball" && craft.animateCount == 0) || (craft.moveState == "car" && craft.animateCount == 2) || 
+
+		}else if ((craft.moveState == "car" && craft.animateCount == 1) || (craft.moveState == "airplane" && craft.animateCount == 3)) {
+				
+			rigid.useGravity = true;
+			rigid.isKinematic = false;
+			rigid.mass = 100f;
+			rigid.drag = 1f;
+			rigid.angularDrag = 1f;
+
+		} else if(
 			(craft.moveState == "airplane" && craft.animateCount == 2) || (craft.moveState == "jet" && craft.animateCount == 4)||
 			(craft.moveState == "jet" && craft.animateCount == 3) || (craft.moveState == "nasa" && craft.animateCount == 5) ||
 			(craft.moveState == "nasa" && craft.animateCount == 4) || (craft.moveState == "rocket" && craft.animateCount == 6)||
@@ -129,24 +159,33 @@ public class CharacterMovement : MonoBehaviour
 
 
 	void BallMovement(){
+		speed = 1000f;
+
+		float moveHorizontal = Input.GetAxis ("Horizontal"); 
+		float moveVertical = Input.GetAxis ("Vertical");
+
+		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+
+		rigid.AddForce (movement * speed * Time.deltaTime);
 
 	}
 
 	void GroundHoveringMovement ()
 	{
-		//speed = 3000;
+		speed = 3000f;
 
 		//check if we are touching the ground:
-		if (Physics.Raycast (transform.position, transform.up * -1, 3f)) {
+		if (Physics.Raycast (transform.position, transform.up * -1, 5f)) {
 			////we are on the ground; enable the accelartor and increase drag:
 			rigid.drag = 1;
 
 			////calculate forward force:
-			Vector3 forwardForce = transform.forward * acceleration * Input.GetAxis ("Vertical");
+			Vector3 forwardForce = transform.forward * speed * Input.GetAxis ("Vertical");
 
 			////correct the force for deltatime and vehical mass:
 			forwardForce = forwardForce * Time.deltaTime * rigid.mass;
 			rigid.AddForce (forwardForce);
+
 
 		} else {
 			//we aren't on the ground and dont want to just halt in the mid-air; reduce drag:
@@ -157,22 +196,21 @@ public class CharacterMovement : MonoBehaviour
 		Vector3 turnTorque = Vector3.up * rotationRate * Input.GetAxis ("Horizontal");
 
 		////correct the force for deltatime and vehicle mass:
-		turnTorque =turnTorque * Time.deltaTime * rigid.mass;
+		turnTorque = turnTorque * Time.deltaTime * rigid.mass;
 		rigid.AddTorque (turnTorque);
 
 		////"Fake" rotate the car when you are turning:
 		Vector3 newRotation = transform.eulerAngles;
+		float xRotation = Mathf.Lerp (this.transform.rotation.x, 0f, Time.deltaTime / 5.0f);
 		float zRotation = Mathf.SmoothDampAngle (
 			newRotation.z, Input.GetAxis ("Horizontal") * - turnRotationAngle,
 			ref rotationVelocity, turnRotationSeekSpeed);
-		newRotation = new Vector3 (newRotation.x, newRotation.y, zRotation);
+		newRotation = new Vector3 (0, newRotation.y, zRotation);
 		transform.eulerAngles = newRotation;
-
 
 	}
 	void GroundMovement ()
 	{
-		speed = 0;
 
 		if(right){
 			speed += power;
@@ -220,6 +258,10 @@ public class CharacterMovement : MonoBehaviour
 
 	void AirMovement(){
 
+		if (changeSpeed == true) {
+			speed = 700f;
+			changeSpeed = false;
+		}
 
 		// Turn variables to rotation and position of the object
 		rotationx = (int)transform.eulerAngles.x; 

@@ -23,7 +23,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 	private List <GameObject> newSpheres = new List<GameObject>();
 
 	public int animateCount = 0;
-	public string moveState = "idle";
+	public string moveState = "ball";
 
 	private bool disolveLerpState, disolveState, pickNewTexture = false;
 	private float disolveLerp = 0.0f;
@@ -36,9 +36,9 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 	List <int> top = new List<int>(); 
 	List <int> bottom = new List<int>(); 
-	private float topChanger, bottomChanger = 0;
 
-	private bool nextAnim,prevAnim = false;
+	private bool nextAnim = true;
+	private bool prevAnim = false;
 	private float ballId, carId, airplaneId, jetId, nasaId, rocketId = 0;
 	private int[] left, right, back, front, frontStretch, backStretch = new int[]{};
 
@@ -46,7 +46,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 	Material material;
 
 	//private MeshCollider meshCollider; 
-	//private SphereCollider sphereCollider; 
+	private SphereCollider sphereCollider; 
 	private float colliderCenterY, colliderCenterZ, colliderSizeX, colliderSizeY, colliderSizeZ = 0;
 	private BoxCollider boxCollider;
 	private Rigidbody meshRigidBody; 
@@ -67,6 +67,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 		return i + 6;
 	}
 
+	private CharacterMovement craftMovement;
 
 	private GameObject createSphere(Vector3 pos , List <GameObject> Arr, int Id){
 
@@ -94,6 +95,8 @@ public class CharacterMeshComplete : MonoBehaviour {
 	{
 		this.name = "dynamic object";
 
+		craftMovement = GetComponent<CharacterMovement> ();
+			
 		CreateMesh ();
 		AddSpheres ();
 		GetSides ();
@@ -893,7 +896,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 	void Update()
 	{
-		//this.transform.localScale = Vector3.Lerp (transform.localScale, Vector3.one * 0.5f, Time.deltaTime / 10.0f);
+		this.transform.localScale = Vector3.Lerp (transform.localScale, Vector3.one * 0.5f, Time.deltaTime / 10.0f);
 
 
 		UpdateMesh ();
@@ -906,8 +909,11 @@ public class CharacterMeshComplete : MonoBehaviour {
 		NasaPlaneAnimation ();
 		RocketAnimation ();
 
-		if (Input.GetKeyDown ("d")) 
+		if (Input.GetKeyDown ("2")) 
 		{
+
+			print ("1");
+
 			prevAnim = false;
 			if (animateCount == 0 && moveState == "idle" && nextAnim == false) {
 				moveState = "ball"; 
@@ -942,7 +948,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 			print("moveState:  "+ moveState+"   count: "+animateCount +" prev: "+prevAnim+"  next: "+nextAnim);
 		}
 
-		if (Input.GetKeyDown ("a")) 
+		if (Input.GetKeyDown ("1")) 
 		{
 			nextAnim = false;
 			if (animateCount == 6 && moveState == "idle"  && prevAnim == false) {
@@ -986,7 +992,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 		
 		meshFilter.sharedMesh = null;
 		//meshCollider.sharedMesh = null;
-		//sphereCollider =  null;
+		sphereCollider =  null;
 		meshRigidBody = null;
 		vertices = null;
 		triangles = null; 
@@ -1279,8 +1285,10 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 	private void CreateCollider(){
 
-		//Destroy(sphereCollider);
-		//sphereCollider = gameObject.AddComponent (typeof(SphereCollider)) as SphereCollider;
+		Destroy(sphereCollider);
+		sphereCollider = gameObject.AddComponent (typeof(SphereCollider)) as SphereCollider;
+		sphereCollider.center = Vector3.zero;
+
 		//		meshCollider = GetComponent(typeof(MeshCollider)) as MeshCollider;
 		//		meshCollider.sharedMesh = mesh; // Give it your mesh here.
 
@@ -1306,64 +1314,71 @@ public class CharacterMeshComplete : MonoBehaviour {
 	private void UpdateCollider()
 	{
 		//Destroy(boxCollider);
+		if (craftMovement.ballState) {
 
-		float lerping = 1f * Time.deltaTime;
+			sphereCollider.enabled = true;
+			boxCollider.enabled = false;
 
-		if ((moveState == "ball" && animateCount == 0) || (moveState == "car" && animateCount == 2)) { 
+		} else {
+
+			sphereCollider.enabled = false;
+			boxCollider.enabled = true;
+
+			float lerping = 1f * Time.deltaTime;
+
+			if ((moveState == "ball" && animateCount == 0) || (moveState == "car" && animateCount == 2)) { 
 			
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0, lerping);
+				colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, xSize, lerping);
-			colliderSizeY = Mathf.Lerp (colliderSizeY, ySize, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, zSize, lerping);
+				colliderSizeX = Mathf.Lerp (colliderSizeX, xSize, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, ySize, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, zSize, lerping);
 
-		} else if ((moveState == "car" && animateCount == 1) || (moveState == "airplane" && animateCount == 3)) {
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping );
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping );
+			} else if ((moveState == "car" && animateCount == 1) || (moveState == "airplane" && animateCount == 3)) {
+				colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, 8, lerping );
-			colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 13, lerping );
-		} else if ((moveState == "airplane" && animateCount == 2) || (moveState == "jet" && animateCount == 4)) {
+				colliderSizeX = Mathf.Lerp (colliderSizeX, 8, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, 13, lerping);
+			} else if ((moveState == "airplane" && animateCount == 2) || (moveState == "jet" && animateCount == 4)) {
 
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, -4, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, -4, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
-			colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 22, lerping);
+				colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, 22, lerping);
 		
-		}else if ((moveState == "jet" && animateCount == 3) || (moveState == "nasa" && animateCount == 5))
-		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, -1.5f, lerping);
+			} else if ((moveState == "jet" && animateCount == 3) || (moveState == "nasa" && animateCount == 5)) {
+				colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, -1.5f, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, 14, lerping);
-			colliderSizeY = Mathf.Lerp (colliderSizeY, 5, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 16, lerping);
+				colliderSizeX = Mathf.Lerp (colliderSizeX, 14, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, 5, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, 16, lerping);
 
 
-		}else if ((moveState == "nasa" && animateCount == 4) || (moveState == "rocket" && animateCount == 6))
-		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 0.5f, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
+			} else if ((moveState == "nasa" && animateCount == 4) || (moveState == "rocket" && animateCount == 6)) {
+				colliderCenterY = Mathf.Lerp (colliderCenterY, 0.5f, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
-			colliderSizeY = Mathf.Lerp (colliderSizeY, 4, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 11, lerping);
+				colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, 4, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, 11, lerping);
 			
-		}else if ((moveState == "rocket" && animateCount == 5))
-		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
+			} else if ((moveState == "rocket" && animateCount == 5)) {
+				colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
+				colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
 
-			colliderSizeX = Mathf.Lerp (colliderSizeX, 7, lerping);
-			colliderSizeY = Mathf.Lerp (colliderSizeY, 2, lerping);
-			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 9, lerping);
+				colliderSizeX = Mathf.Lerp (colliderSizeX, 7, lerping);
+				colliderSizeY = Mathf.Lerp (colliderSizeY, 2, lerping);
+				colliderSizeZ = Mathf.Lerp (colliderSizeZ, 9, lerping);
+			}
+
+			boxCollider.center = new Vector3 (0, colliderCenterY, colliderCenterZ);
+			boxCollider.size = new Vector3 (colliderSizeX, colliderSizeY, colliderSizeZ);
 		}
-
-		boxCollider.center = new Vector3(0, colliderCenterY, colliderCenterZ);
-		boxCollider.size = new Vector3(colliderSizeX, colliderSizeY , colliderSizeZ );
 	}
 
 
