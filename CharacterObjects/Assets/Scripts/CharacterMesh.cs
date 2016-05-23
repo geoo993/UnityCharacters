@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-//[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody))]
 
 
 public class CharacterMesh : MonoBehaviour {
@@ -29,7 +29,7 @@ public class CharacterMesh : MonoBehaviour {
 	private int xSize = 10;
 	private int ySize = 10;
 	private int zSize = 10;
-	[Range(0,6)]public int roundness = 5;
+	private int roundness = 5;
 
 	List <int> top = new List<int>(); 
 	private float topChanger = 0;
@@ -65,15 +65,14 @@ public class CharacterMesh : MonoBehaviour {
 
 
 
-	private GameObject createSphere(Vector3 pos , List <GameObject> objectArr, int Id){
+	private GameObject createSphere(Vector3 pos , List <GameObject> Arr, int Id){
 
 		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
 		a.name = "Cube" + Id;
-		a.transform.localScale = Vector3.zero; //new Vector3 (0.4f, 0.4f, 0.4f);
-		//a.GetComponent<Renderer> ().material.color = Color.red;
+		a.transform.localScale = new Vector3 (0.1f, 0.1f, 0.1f);
+		a.GetComponent<Renderer> ().material.color = Color.red;
 		a.transform.parent = this.transform;
-		objectArr.Add (a);
-
+		Arr.Add (a);
 		return a;
 	}
 	GameObject createParent(Vector3 pos, string name)
@@ -988,7 +987,7 @@ public class CharacterMesh : MonoBehaviour {
 		NasaPlaneAnimation ();
 		RocketAnimation ();
 
-		if (Input.GetKeyDown (KeyCode.RightArrow)) 
+		if (Input.GetKeyDown ("d")) 
 		{
 			prevAnim = false;
 			if (animateCount == 0 && moveState == "idle" && nextAnim == false) {
@@ -1018,7 +1017,7 @@ public class CharacterMesh : MonoBehaviour {
 			print("moveState:  "+ moveState+"   count: "+animateCount +" prev: "+prevAnim+"  next: "+nextAnim);
 		}
 
-		if (Input.GetKeyDown (KeyCode.LeftArrow)) 
+		if (Input.GetKeyDown ("a")) 
 		{
 			nextAnim = false;
 			if (animateCount == 6 && moveState == "idle"  && prevAnim == false) {
@@ -1358,7 +1357,7 @@ public class CharacterMesh : MonoBehaviour {
 	private void CreateRigidBody(){
 		meshRigidBody = GetComponent (typeof(Rigidbody)) as Rigidbody;
 		//meshRigidBody.isKinematic = true;
-		meshRigidBody.useGravity = true;
+		//meshRigidBody.useGravity = true;
 	}
 
 	private void CreateColorAndtexture() {

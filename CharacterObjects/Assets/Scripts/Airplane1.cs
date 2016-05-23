@@ -48,10 +48,10 @@ public class Airplane1 : MonoBehaviour
 		rigid.useGravity = false;
 		rigid.isKinematic = true;
 
-		groundtrigger = groundSens.GetComponent<SensorGround> ().triggered; 
-		sensorfront = frontSens.GetComponent<SensorFront> ().sensorFront;
-		sensorfrontup = frontUpSens.GetComponent<SensorFrontUp> ().sensorFrontUp;
-		sensorrear = rearSens.GetComponent<SensorRear> ().sensorRear;
+//		groundtrigger = groundSens.GetComponent<SensorGround> ().triggered; 
+//		sensorfront = frontSens.GetComponent<SensorFront> ().sensorFront;
+//		sensorfrontup = frontUpSens.GetComponent<SensorFrontUp> ().sensorFrontUp;
+//		sensorrear = rearSens.GetComponent<SensorRear> ().sensorRear;
 
 	}
 

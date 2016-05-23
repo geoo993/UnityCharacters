@@ -59,11 +59,11 @@ public class Airplane : MonoBehaviour {
 		//transform.position = new Vector3 (0, 1.67f, 0);
 		transform.eulerAngles = new Vector3 (0, 0, 0);
 
-
-		groundtrigger = groundSens.GetComponent<SensorGround> ().triggered; 
-		sensorfront = frontSens.GetComponent<SensorFront> ().sensorFront;
-		sensorfrontup = frontUpSens.GetComponent<SensorFrontUp> ().sensorFrontUp;
-		sensorrear = rearSens.GetComponent<SensorRear> ().sensorRear;
+//
+//		groundtrigger = groundSens.GetComponent<SensorGround> ().triggered; 
+//		sensorfront = frontSens.GetComponent<SensorFront> ().sensorFront;
+//		sensorfrontup = frontUpSens.GetComponent<SensorFrontUp> ().sensorFrontUp;
+//		sensorrear = rearSens.GetComponent<SensorRear> ().sensorRear;
 
 	}
 

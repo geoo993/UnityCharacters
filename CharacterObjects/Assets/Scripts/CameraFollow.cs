@@ -12,8 +12,8 @@ public class CameraFollow : MonoBehaviour {
 	private Vector3 cameraOriginalPosition = Vector3.zero;
 	private Vector3 nextPosition = Vector3.zero;
 
-	private float distance = 30.0f; //10.0f;
-	private float height = 2.0f; //5.0f;
+	private float distance = 40.0f; //10.0f;
+	private float height = 5.0f; //5.0f;
 	
 	private float heightDamping = 4.0f;  //2.0f;
 	private float rotationDamping = 3.0f;
@@ -26,9 +26,7 @@ public class CameraFollow : MonoBehaviour {
 
 	void Update ()
 	{
-		//plane.GetComponent<AirplaneMovement>().PlaneMove();
-
-
+		
 
 	}
 	void LateUpdate () {
@@ -54,17 +52,17 @@ public class CameraFollow : MonoBehaviour {
 		
 		Quaternion currentRotation = Quaternion.Euler (0.0f, currentRotationAngle, 0.0f);
 		
-//		transform.position = planeTarget.position;
-//		transform.position -= currentRotation * Vector3.forward * distance;
-//		
-//		transform.position = new Vector3(planeTarget.position.x, currentHeight, planeTarget.position.z);
-//
-
-		nextPosition.x = Mathf.Lerp (transform.position.x, planeTarget.position.x, speed.x * Time.deltaTime);
-		nextPosition.y = Mathf.Lerp (transform.position.y, planeTarget.position.y, speed.y * Time.deltaTime);
-		nextPosition.z = Mathf.Lerp (transform.position.z, planeTarget.position.z, speed.z * Time.deltaTime);
+		transform.position = planeTarget.position;
+		transform.position -= currentRotation * Vector3.forward * distance;
 		
-		transform.position = nextPosition;
+		transform.position = new Vector3(planeTarget.position.x, currentHeight, planeTarget.position.z);
+
+
+//		nextPosition.x = Mathf.Lerp (transform.position.x, planeTarget.position.x, speed.x * Time.deltaTime);
+//		nextPosition.y = Mathf.Lerp (transform.position.y, planeTarget.position.y, speed.y * Time.deltaTime);
+//		nextPosition.z = Mathf.Lerp (transform.position.z, planeTarget.position.z, speed.z * Time.deltaTime);
+//		
+//		transform.position = nextPosition;
 	}
 
 

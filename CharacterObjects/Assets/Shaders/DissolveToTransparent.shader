@@ -26,7 +26,7 @@
 	     	};
 
 	     	sampler2D _MainTex, _DissolveTex, _BurnRamp;
-	      	float _DissolveAmount, _Shininess, _BurnSize;
+	      	float _DissolveAmount, _BurnSize;
 	      	float4 _Color;
 
 		     void surf (Input IN, inout SurfaceOutput OUT) 
