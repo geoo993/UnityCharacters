@@ -24,16 +24,18 @@ public class CameraFollow : MonoBehaviour {
 
 	}
 
-	void Update ()
+	void FixedUpdate ()
 	{
 		
+		FollowPlaneTarget();  
+		LookAtPlane(); 
 
 	}
 	void LateUpdate () {
 
-		FollowPlaneTarget();  
-		LookAtPlane(); 
-
+//		FollowPlaneTarget();  
+//		LookAtPlane(); 
+//
 
 	}
 	

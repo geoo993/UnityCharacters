@@ -368,7 +368,7 @@ public class CharacterMesh : MonoBehaviour {
 				moveState = "idle";
 
 			} 
-			print (ballId);
+			//print (ballId);
 
 			topChanger = Mathf.Lerp (topChanger, 0, ballId);
 			bottomChanger = Mathf.Lerp (bottomChanger, 0, ballId);
@@ -1083,9 +1083,9 @@ public class CharacterMesh : MonoBehaviour {
 
 //		for (int j = 0; j < 161; j++) 
 //		{
-//			////topParent.transform.localPosition = vertices [top [120]] ;
-//			////bottomParent.transform.localPosition = vertices [bottom [120]] ;
-//
+			topParent.transform.localPosition = vertices [top [120]] ;
+			bottomParent.transform.localPosition = vertices [bottom [120]] ;
+
 //			////vertices [top [j]] = newSpheres [top [j]].transform.localPosition +  topParent.transform.localPosition;
 //			////vertices [bottom [j]] = newSpheres [bottom [j]].transform.localPosition +  bottomParent.transform.localPosition;
 //		}

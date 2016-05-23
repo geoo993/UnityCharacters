@@ -22,8 +22,12 @@ public class CharacterMeshComplete : MonoBehaviour {
 	public GameObject sphere;
 	private List <GameObject> newSpheres = new List<GameObject>();
 
-	private int animateCount = 0;
-	private string moveState = "idle";
+	public int animateCount = 0;
+	public string moveState = "idle";
+
+	private bool disolveLerpState, disolveState, pickNewTexture = false;
+	private float disolveLerp = 0.0f;
+	private int turnCount = 0;
 
 	private int xSize = 10; 
 	private int ySize = 10; 
@@ -64,10 +68,6 @@ public class CharacterMeshComplete : MonoBehaviour {
 	}
 
 
-	private bool disolveLerpState, disolveState, pickNewTexture = false;
-	private float disolveLerp = 0.0f;
-	private int turnCount = 0;
-
 	private GameObject createSphere(Vector3 pos , List <GameObject> Arr, int Id){
 
 		GameObject a = new GameObject ();
@@ -98,6 +98,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 		AddSpheres ();
 		GetSides ();
 		SpheresID ();
+
 
 	}
 
@@ -223,14 +224,14 @@ public class CharacterMeshComplete : MonoBehaviour {
 	{
 		
 
-		topParent = createParent(newSpheres [top [120]].transform.localPosition, "top");
-		bottomParent = createParent(newSpheres [bottom [120]].transform.localPosition, "bottom");
-		leftParent = createParent(newSpheres [left [12]].transform.localPosition, "left");
-		rightParent = createParent(newSpheres [right [12]].transform.localPosition, "right");
-		frontParent = createParent(newSpheres [front [12]].transform.localPosition, "front");
-		backParent = createParent(newSpheres [back [12]].transform.localPosition, "back");
-		frontStrechParent = createParent(newSpheres [front [12]].transform.localPosition, "front Strech");
-		backStrechParent = createParent(newSpheres [back [12]].transform.localPosition, "back Strech");
+		topParent = createParent(newSpheres [top [120]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "top");
+		bottomParent = createParent(newSpheres [bottom [120]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "bottom");
+		leftParent = createParent(newSpheres [left [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "left");
+		rightParent = createParent(newSpheres [right [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "right");
+		frontParent = createParent(newSpheres [front [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "front");
+		backParent = createParent(newSpheres [back [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "back");
+		frontStrechParent = createParent(newSpheres [front [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "front Strech");
+		backStrechParent = createParent(newSpheres [back [12]].transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2), "back Strech");
 
 
 		foreach (int fs in frontStretch) {
@@ -258,6 +259,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 			newSpheres [front [i]].transform.parent = frontParent.transform;
 			newSpheres [back [i]].transform.parent = backParent.transform;
 		}
+
 
 	}
 
@@ -290,8 +292,6 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			} 
 
-			topChanger = Mathf.Lerp (topChanger, 0, ballId);
-			bottomChanger = Mathf.Lerp (bottomChanger, 0, ballId);
 		} else 
 		{
 			ballId = 0;
@@ -326,26 +326,31 @@ public class CharacterMeshComplete : MonoBehaviour {
 			} 
 
 
-			if (nextAnim) {
-				topChanger = Mathf.Lerp (topChanger, 0, carId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -2, carId);
-
+			if (nextAnim) 
+			{
+		
 				for (int i = 0; i < 25; i++) 
 				{
 					newSpheres [front [i]].transform.Translate (
-						-((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 1600.0f), 
+						-((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 1000.0f), 
+						-((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 1600.0f), 
 						0.0f);
 
 				}
-				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 12.0f, carId);
 
-				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, carId);
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 5.0f, carId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -3.0f, carId);
 
-				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 9.5f, carId);
-				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, 0.5f, carId);
-				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, carId);
-				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -0.60f, carId);
+				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 7.0f, carId);
+				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -6.0f, carId);
+
+				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 4.5f, carId);
+				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -4.5f, carId);
+				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 6.0f, carId);
+				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -4.60f, carId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZ);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
@@ -356,24 +361,27 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			}
 			if (prevAnim) {
-				topChanger = Mathf.Lerp (topChanger, 0, carId);
-				bottomChanger = Mathf.Lerp (bottomChanger, 0, carId);
-
+				
 				for (int i = 0; i < 25; i++) {
 					newSpheres [front [i]].transform.Translate (
-						((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 1600.0f), 
+						((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 1000.0f), 
+						((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 1600.0f), 
 						0.0f);
-
 				}
-				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 10.0f, carId);
+					
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 5.0f, carId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -5.0f, carId);
 
-				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, 0.0f, carId);
+				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 5.0f, carId);
+				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -5.0f, carId);
+				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 5, carId);
+				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, carId);
+				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 5.0f, carId);
+				float bachStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -5.0f, carId);
 
-				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 10f, carId);
-				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, 0f, carId);
-				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 10.0f, carId);
-				float bachStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, 0f, carId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZr);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZr);
@@ -417,33 +425,32 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			if (nextAnim) 
 			{
-				topChanger = Mathf.Lerp (topChanger, 0, airplaneId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3, airplaneId);
-
+				
 				for (int i = 0; i < 25; i++) {
 					newSpheres [front [i]].transform.Translate (
-						((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 500.0f), 
+						((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 1000.0f), 
+						((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 500.0f), 
 						0.0f);
 
 					newSpheres [back [i]].transform.Translate (
-						((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
-						-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
+						((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 500.0f), 
+						-((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 
 				}
 
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 5.0f, airplaneId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -2.0f, airplaneId);
+				float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 0.5f, airplaneId);
+				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -15.0f, airplaneId);
+				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -7.0f, airplaneId);
+				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, -1.0f, airplaneId);
+				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -10.0f, airplaneId);
+				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 10.0f, airplaneId);
 
-				float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.5f, airplaneId);
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
-				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -10.0f, airplaneId);
-
-				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -2.0f, airplaneId);
-
-
-				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 4.0f, airplaneId);
-				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, airplaneId);
-				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, airplaneId);
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontY, frontParent.transform.localPosition.z);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
 				leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, LeftRightZ);
@@ -452,30 +459,32 @@ public class CharacterMeshComplete : MonoBehaviour {
 			
 			}
 			if (prevAnim) {
-				topChanger = Mathf.Lerp (topChanger, 0, airplaneId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -2, airplaneId);
-
+				
 				for (int i = 0; i < 25; i++) {
 					newSpheres [front [i]].transform.Translate (
-						-((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 1000.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 500.0f), 
+						-((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 1000.0f), 
+						-((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 500.0f), 
 						0.0f);
 
 					newSpheres [back [i]].transform.Translate (
-						-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 500.0f), 
-						((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 1000.0f), 
+						-((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 500.0f), 
+						((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 
 				}
 
-				float frontYr = Mathf.Lerp (frontParent.transform.localPosition.y, 5f, airplaneId);
-				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -1.0f, airplaneId);
-				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -0.60f, airplaneId);
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 5.0f, airplaneId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -3.0f, airplaneId);
 
+				float frontYr = Mathf.Lerp (frontParent.transform.localPosition.y, 0f, airplaneId);
+				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -6.0f, airplaneId);
+				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -5.60f, airplaneId);
+				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, 0.0f, airplaneId);
+				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -4.5f, airplaneId);
+				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 4.5f, airplaneId);
 
-				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, 5.0f, airplaneId);
-				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, 0.5f, airplaneId);
-				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 9.5f, airplaneId);
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontYr, frontParent.transform.localPosition.z);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZr);
@@ -517,28 +526,25 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			if (nextAnim) {
 				
-				topChanger = Mathf.Lerp (topChanger, -1.5f, jetId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3.2f, jetId);
-
 				for (int i = 0; i < 25; i++) {
 					newSpheres [left [i]].transform.Translate (
-						((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 300.0f), 
-						((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 300.0f), 
+						((newSpheres [left [12]].transform.localPosition.x - newSpheres [left [i]].transform.localPosition.x) / 300.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [left [i]].transform.localPosition.y) / 300.0f), 
 						0.00f);
 
 					newSpheres [right [i]].transform.Translate (
-						((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 300.0f), 
-						((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 300.0f), 
+						((newSpheres [right [12]].transform.localPosition.x - newSpheres [right [i]].transform.localPosition.x) / 300.0f), 
+						((newSpheres [right [12]].transform.localPosition.y - newSpheres [right [i]].transform.localPosition.y) / 300.0f), 
 						0.0f);
 
 					newSpheres [front [i]].transform.Translate (
-						((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
+						((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 900.0f), 
+						((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 
 					newSpheres [back [i]].transform.Translate (
-						-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 1000.0f), 
-						((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 300.0f), 
+						-((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 1000.0f), 
+						((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 300.0f), 
 						0.0f);
 				}
 
@@ -546,25 +552,31 @@ public class CharacterMeshComplete : MonoBehaviour {
 				foreach (int bs in backStretch) {
 					newSpheres [bs].transform.Translate (
 						0.0f, 
-						((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 500.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [bs].transform.localPosition.y) / 500.0f), 
 						0.0f);
 				}
 				foreach (int fs in frontStretch) {
 					newSpheres [fs].transform.Translate (
 						0.0f, 
-						((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 500.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [fs].transform.localPosition.y) / 500.0f), 
 						0.0f);
 				}
 
+				//done
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 3.5f, jetId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -1.8f, jetId);
 
+				float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 0.0f, jetId);
+				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, -4.0f, jetId);
+				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -7.0f, jetId);
+				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 7.0f, jetId);
+				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -10.0f, jetId);
+				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -6.0f, jetId);
+				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 7.0f, jetId);
 
-				float frontY = Mathf.Lerp (frontParent.transform.localPosition.y, 5.0f, jetId);
-				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 1.0f, jetId);
-				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -2.0f, jetId);
-				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 12.0f, jetId);
-				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -5.0f, jetId);
-				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -1.0f, jetId);
-				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 12.0f, jetId);
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
+
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontY, frontParent.transform.localPosition.z);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
@@ -575,29 +587,25 @@ public class CharacterMeshComplete : MonoBehaviour {
 			}
 			if (prevAnim) {
 
-				topChanger = Mathf.Lerp (topChanger, 0, jetId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3, jetId);
-
-
 				for (int i = 0; i < 25; i++) {
 					newSpheres [left [i]].transform.Translate (
-						-((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 300.0f), 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 300.0f), 
+						-((newSpheres [left [12]].transform.localPosition.x - newSpheres [left [i]].transform.localPosition.x) / 300.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [left [i]].transform.localPosition.y) / 300.0f), 
 						0.00f);
 
 					newSpheres [right [i]].transform.Translate (
-						-((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 300.0f), 
-						-((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 300.0f), 
+						-((newSpheres [right [12]].transform.localPosition.x - newSpheres [right [i]].transform.localPosition.x) / 300.0f), 
+						-((newSpheres [right [12]].transform.localPosition.y - newSpheres [right [i]].transform.localPosition.y) / 300.0f), 
 						0.0f);
 
 					newSpheres [front [i]].transform.Translate (
-						-((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 900.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
+						-((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 900.0f), 
+						-((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 
 					newSpheres [back [i]].transform.Translate (
-						((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 1000.0f), 
-						-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 300.0f), 
+						((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 1000.0f), 
+						-((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 300.0f), 
 						0.0f);
 				}
 
@@ -605,23 +613,29 @@ public class CharacterMeshComplete : MonoBehaviour {
 				foreach (int bs in backStretch) {
 					newSpheres [bs].transform.Translate (
 						0.0f, 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 500.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [bs].transform.localPosition.y) / 500.0f), 
 						0.0f);
 				}
 				foreach (int fs in frontStretch) {
 					newSpheres [fs].transform.Translate (
 						0.0f, 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 500.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [fs].transform.localPosition.y) / 500.0f), 
 						0.0f);
 				}
 
-				float frontYr = Mathf.Lerp (frontParent.transform.localPosition.y, 5.5f, jetId);
-				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, 4.0f, jetId);
-				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, jetId);
-				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, jetId);
-				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -10.0f, jetId);
-				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -2.0f, jetId);
-				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, jetId);
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 5.0f, jetId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -2.0f, jetId);
+
+				float frontYr = Mathf.Lerp (frontParent.transform.localPosition.y, 0.5f, jetId);
+				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, -1.0f, jetId);
+				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -10.0f, jetId);
+				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 10.0f, jetId);
+				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -15.0f, jetId);
+				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -7.0f, jetId);
+				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 6.0f, jetId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontYr, frontParent.transform.localPosition.z);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZr);
@@ -666,47 +680,50 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			if (nextAnim) {
 				
-				topChanger = Mathf.Lerp (topChanger, -2.5f, nasaId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3.2f, nasaId);
-
 				for (int i = 0; i < 25; i++) {
 					newSpheres [front [i]].transform.Translate (
-						((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 500.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
-						((newSpheres [front [12]].transform.position.z - newSpheres [front [i]].transform.position.z) / 200.0f));
+						((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 500.0f), 
+						((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 400.0f), 
+						((newSpheres [front [12]].transform.localPosition.z - newSpheres [front [i]].transform.localPosition.z) / 200.0f));
 				
 					newSpheres [left [i]].transform.Translate (
-						((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 400.0f), 
-						((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 400.0f), 
+						((newSpheres [left [12]].transform.localPosition.x - newSpheres [left [i]].transform.localPosition.x) / 400.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [left [i]].transform.localPosition.y) / 400.0f), 
 						0.00f);
 
 					newSpheres [right [i]].transform.Translate (
-						((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 400.0f), 
-						((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 400.0f), 
+						((newSpheres [right [12]].transform.localPosition.x - newSpheres [right [i]].transform.localPosition.x) / 400.0f), 
+						((newSpheres [right [12]].transform.localPosition.y - newSpheres [right [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 				}
 
 				//stretch y
 				foreach (int bs in backStretch) {
 					newSpheres [bs].transform.Translate (
-						((newSpheres [top [120]].transform.position.x - newSpheres [bs].transform.position.x) / 1000.0f), 
-						((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 1000.0f), 
+						((newSpheres [top [120]].transform.localPosition.x - newSpheres [bs].transform.localPosition.x) / 1000.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [bs].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 				}
 				foreach (int fs in frontStretch) {
 					newSpheres [fs].transform.Translate (
-						((newSpheres [top [120]].transform.position.x - newSpheres [fs].transform.position.x) / 1000.0f), 
-						((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 1000.0f), 
+						((newSpheres [top [120]].transform.localPosition.x - newSpheres [fs].transform.localPosition.x) / 1000.0f), 
+						((newSpheres [left [12]].transform.localPosition.y - newSpheres [fs].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 				}
+				//done
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 3f, nasaId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -1.8f, nasaId);
 
-				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 11.0f, nasaId);
-				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, 3.0f, nasaId);
-				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, nasaId);
-				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, nasaId);
-				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, 0.0f, nasaId);
-				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, 0.0f, nasaId);
-				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11.0f, nasaId);
+				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 6.0f, nasaId);
+				float LeftRightZ = Mathf.Lerp (leftParent.transform.localPosition.z, -2.0f, nasaId);
+				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -10.0f, nasaId);
+				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 10.0f, nasaId);
+				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -5.5f, nasaId);
+				float backStretchZ = Mathf.Lerp (backStrechParent.transform.localPosition.z, -5.5f, nasaId);
+				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 6.0f, nasaId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZ);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
@@ -719,49 +736,50 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			if (prevAnim) {
 
-				topChanger = Mathf.Lerp (topChanger, -1.5f, nasaId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3.2f, nasaId);
-
 				for (int i = 0; i < 25; i++) {
 					newSpheres [front [i]].transform.Translate (
-						-((newSpheres [front [12]].transform.position.x - newSpheres [front [i]].transform.position.x) / 500.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [front [i]].transform.position.y) / 400.0f), 
-						-((newSpheres [front [12]].transform.position.z - newSpheres [front [i]].transform.position.z) / 200.0f));
+						-((newSpheres [front [12]].transform.localPosition.x - newSpheres [front [i]].transform.localPosition.x) / 500.0f), 
+						-((newSpheres [front [12]].transform.localPosition.y - newSpheres [front [i]].transform.localPosition.y) / 400.0f), 
+						-((newSpheres [front [12]].transform.localPosition.z - newSpheres [front [i]].transform.localPosition.z) / 200.0f));
 
 					newSpheres [left [i]].transform.Translate (
-						-((newSpheres [left [12]].transform.position.x - newSpheres [left [i]].transform.position.x) / 400.0f), 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [left [i]].transform.position.y) / 400.0f), 
+						-((newSpheres [left [12]].transform.localPosition.x - newSpheres [left [i]].transform.localPosition.x) / 400.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [left [i]].transform.localPosition.y) / 400.0f), 
 						0.00f);
 
 					newSpheres [right [i]].transform.Translate (
-						-((newSpheres [right [12]].transform.position.x - newSpheres [right [i]].transform.position.x) / 400.0f), 
-						-((newSpheres [right [12]].transform.position.y - newSpheres [right [i]].transform.position.y) / 400.0f), 
+						-((newSpheres [right [12]].transform.localPosition.x - newSpheres [right [i]].transform.localPosition.x) / 400.0f), 
+						-((newSpheres [right [12]].transform.localPosition.y - newSpheres [right [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 				}
 
 				//stretch y
 				foreach (int bs in backStretch) {
 					newSpheres [bs].transform.Translate (
-						-((newSpheres [top [120]].transform.position.x - newSpheres [bs].transform.position.x) / 1000.0f), 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [bs].transform.position.y) / 1000.0f), 
+						-((newSpheres [top [120]].transform.localPosition.x - newSpheres [bs].transform.localPosition.x) / 1000.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [bs].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 				}
 				foreach (int fs in frontStretch) {
 					newSpheres [fs].transform.Translate (
-						-((newSpheres [top [120]].transform.position.x - newSpheres [fs].transform.position.x) / 1000.0f), 
-						-((newSpheres [left [12]].transform.position.y - newSpheres [fs].transform.position.y) / 1000.0f), 
+						-((newSpheres [top [120]].transform.localPosition.x - newSpheres [fs].transform.localPosition.x) / 1000.0f), 
+						-((newSpheres [left [12]].transform.localPosition.y - newSpheres [fs].transform.localPosition.y) / 1000.0f), 
 						0.0f);
 				}
 
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 3.5f, nasaId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -1.8f, nasaId);
 
-				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 12.0f, nasaId);
+				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 7.0f, nasaId);
+				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, -4.0f, nasaId);
+				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -7.0f, nasaId);
+				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 7.0f, nasaId);
+				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -10.0f, nasaId);
+				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -6.0f, nasaId);
+				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 7.0f, nasaId);
 
-				float LeftRightZr = Mathf.Lerp (leftParent.transform.localPosition.z, 1.0f, nasaId);
-				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -2.0f, nasaId);
-				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 12.0f, nasaId);
-				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -5.0f, nasaId);
-				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -1.0f, nasaId);
-				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 12.0f, nasaId);
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZr);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZr);
@@ -806,82 +824,62 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 			if (nextAnim) {
 
-			
-				topChanger = Mathf.Lerp (topChanger, -3.8f, rocketId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -4.0f, rocketId);
-
 				for (int i = 0; i < 25; i++) {
 					newSpheres [back [i]].transform.Translate (
-						((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 800.0f), 
-						((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 400.0f), 
+						((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 800.0f), 
+						((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 				}
 
-				foreach (int bs in backStretch) {
-					newSpheres [bs].transform.Translate (
-						((newSpheres [top [120]].transform.position.x - newSpheres [bs].transform.position.x) / 1000.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [bs].transform.position.y) / 1000.0f), 
-						0.0f);
-				}
-				foreach (int fs in frontStretch) {
-					newSpheres [fs].transform.Translate (
-						((newSpheres [top [120]].transform.position.x - newSpheres [fs].transform.position.x) / 1000.0f), 
-						((newSpheres [front [12]].transform.position.y - newSpheres [fs].transform.position.y) / 1000.0f), 
-						0.0f);
-				}
 
-				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 10f, rocketId);
-				float LeftRightY = Mathf.Lerp (leftParent.transform.localPosition.y, 4.5f, rocketId);
-				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, 1.5f, rocketId);
-				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 8.5f, rocketId);
-				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, 1.0f, rocketId);
-				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 10f, rocketId);
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 2f, rocketId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -2.0f, rocketId);
+
+				float frontZ = Mathf.Lerp (frontParent.transform.localPosition.z, 5.5f, rocketId);
+				float leftX = Mathf.Lerp (leftParent.transform.localPosition.x, -4.5f, rocketId);
+				float rightX = Mathf.Lerp (rightParent.transform.localPosition.x, 4.5f, rocketId);
+				float backZ = Mathf.Lerp (backParent.transform.localPosition.z, -4.8f, rocketId);
+				float frontStretchZ = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 5.5f, rocketId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZ);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZ);
-				leftParent.transform.localPosition = new Vector3 (leftX, LeftRightY, leftParent.transform.localPosition.z);
-				rightParent.transform.localPosition = new Vector3 (rightX, LeftRightY, rightParent.transform.localPosition.z);
+				leftParent.transform.localPosition = new Vector3 (leftX, leftParent.transform.localPosition.y, leftParent.transform.localPosition.z);
+				rightParent.transform.localPosition = new Vector3 (rightX, rightParent.transform.localPosition.y, rightParent.transform.localPosition.z);
 				frontStrechParent.transform.localPosition = new Vector3 (frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZ);
 
 			}
-			if (prevAnim) {
-				topChanger = Mathf.Lerp (topChanger, -2.5f, rocketId);
-				bottomChanger = Mathf.Lerp (bottomChanger, -3.2f, rocketId);
-
-
+			if (prevAnim) 
+			{
 				for (int i = 0; i < 25; i++) {
 					newSpheres [back [i]].transform.Translate (
-						-((newSpheres [back [12]].transform.position.x - newSpheres [back [i]].transform.position.x) / 800.0f), 
-						-((newSpheres [back [12]].transform.position.y - newSpheres [back [i]].transform.position.y) / 400.0f), 
-						0.0f);
-				}
-
-				foreach (int bs in backStretch) {
-					newSpheres [bs].transform.Translate (
-						-((newSpheres [top [120]].transform.position.x - newSpheres [bs].transform.position.x) / 1000.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [bs].transform.position.y) / 1000.0f), 
-						0.0f);
-				}
-				foreach (int fs in frontStretch) {
-					newSpheres [fs].transform.Translate (
-						-((newSpheres [top [120]].transform.position.x - newSpheres [fs].transform.position.x) / 1000.0f), 
-						-((newSpheres [front [12]].transform.position.y - newSpheres [fs].transform.position.y) / 1000.0f), 
+						-((newSpheres [back [12]].transform.localPosition.x - newSpheres [back [i]].transform.localPosition.x) / 800.0f), 
+						-((newSpheres [back [12]].transform.localPosition.y - newSpheres [back [i]].transform.localPosition.y) / 400.0f), 
 						0.0f);
 				}
 
 
-				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 11f, rocketId);
-				float LeftRightYr = Mathf.Lerp (leftParent.transform.localPosition.y, 5.0f, rocketId);
-				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -5.0f, rocketId);
-				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 15.0f, rocketId);
-				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, 0.0f, rocketId);
-				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 11f, rocketId);
+				float topY =  Mathf.Lerp (topParent.transform.localPosition.y, 3f, rocketId);
+				float bottomY =  Mathf.Lerp (bottomParent.transform.localPosition.y, -1.8f, rocketId);
+
+				float frontZr = Mathf.Lerp (frontParent.transform.localPosition.z, 6f, rocketId);
+				float leftXr = Mathf.Lerp (leftParent.transform.localPosition.x, -10.0f, rocketId);
+				float rightXr = Mathf.Lerp (rightParent.transform.localPosition.x, 10.0f, rocketId);
+				float backZr = Mathf.Lerp (backParent.transform.localPosition.z, -5.5f, rocketId);
+				float frontStretchZr = Mathf.Lerp (frontStrechParent.transform.localPosition.z, 6f, rocketId);
+				float backStretchZr = Mathf.Lerp (backStrechParent.transform.localPosition.z, -5.5f, nasaId);
+
+				topParent.transform.localPosition = new Vector3 (topParent.transform.localPosition.x, topY, topParent.transform.localPosition.z);
+				bottomParent.transform.localPosition = new Vector3 (bottomParent.transform.localPosition.x, bottomY, bottomParent.transform.localPosition.z);
 
 				frontParent.transform.localPosition = new Vector3 (frontParent.transform.localPosition.x, frontParent.transform.localPosition.y, frontZr);
 				backParent.transform.localPosition = new Vector3 (backParent.transform.localPosition.x, backParent.transform.localPosition.y, backZr);
-				leftParent.transform.localPosition = new Vector3 (leftXr, LeftRightYr, leftParent.transform.localPosition.z);
-				rightParent.transform.localPosition = new Vector3 (rightXr, LeftRightYr, rightParent.transform.localPosition.z);
+				leftParent.transform.localPosition = new Vector3 (leftXr, leftParent.transform.localPosition.y, leftParent.transform.localPosition.z);
+				rightParent.transform.localPosition = new Vector3 (rightXr, rightParent.transform.localPosition.y, rightParent.transform.localPosition.z);
 				frontStrechParent.transform.localPosition = new Vector3 (frontStrechParent.transform.localPosition.x, frontStrechParent.transform.localPosition.y, frontStretchZr);
+				backStrechParent.transform.localPosition = new Vector3 (backStrechParent.transform.localPosition.x, backStrechParent.transform.localPosition.y, backStretchZr);
 
 
 			}
@@ -895,6 +893,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 	void Update()
 	{
+		//this.transform.localScale = Vector3.Lerp (transform.localScale, Vector3.one * 0.5f, Time.deltaTime / 10.0f);
 
 
 		UpdateMesh ();
@@ -1002,19 +1001,25 @@ public class CharacterMeshComplete : MonoBehaviour {
 		
 		for (int i = 0; i < 25; i++) 
 		{
-			vertices [left [i]] = newSpheres [left [i]].transform.localPosition +  leftParent.transform.localPosition;
-			vertices [right [i]] = newSpheres [right [i]].transform.localPosition +  rightParent.transform.localPosition;
-			vertices [front [i]] = newSpheres [front [i]].transform.localPosition +  frontParent.transform.localPosition;
-			vertices [back [i]] = newSpheres [back [i]].transform.localPosition +  backParent.transform.localPosition;
+			vertices [left [i]] = newSpheres [left [i]].transform.localPosition + leftParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
+			vertices [right [i]] = newSpheres [right [i]].transform.localPosition + rightParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
+			vertices [front [i]] = newSpheres [front [i]].transform.localPosition + frontParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
+			vertices [back [i]] = newSpheres [back [i]].transform.localPosition + backParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
 
 		}
 
 		foreach (int fs in frontStretch) {
-			vertices [fs] = newSpheres [fs].transform.localPosition  +  frontStrechParent.transform.localPosition;
-
+			vertices [fs] = newSpheres [fs].transform.localPosition + frontStrechParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
 		}
 		foreach (int bs in backStretch) {
-			vertices [bs] = newSpheres [bs].transform.localPosition  +  backStrechParent.transform.localPosition;
+			vertices [bs] = newSpheres [bs].transform.localPosition + backStrechParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
+		}
+	
+		for (int j = 0; j < 161; j++) 
+		{
+
+			vertices [top [j]] = newSpheres [top [j]].transform.localPosition + topParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
+			vertices [bottom [j]] = newSpheres [bottom [j]].transform.localPosition + bottomParent.transform.localPosition - new Vector3(xSize/2, ySize/2,zSize/2);
 		}
 
 	}
@@ -1055,7 +1060,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 		CreateTexture ();
 		CreateCollider();
-		//CreateRigidBody ();
+		CreateRigidBody ();
 
 	}
 
@@ -1119,7 +1124,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 				SetVertex(v++, x, y, 0);
 			}
 			for (int z = 1; z <= zSize; z++) {
-				SetVertex(v++, xSize, y, z);
+				SetVertex(v++, xSize , y, z );
 			}
 			for (int x = xSize - 1; x >= 0; x--) {
 				SetVertex(v++, x, y, zSize);
@@ -1135,39 +1140,39 @@ public class CharacterMeshComplete : MonoBehaviour {
 		// top 
 		for (int z = 1; z < zSize; z++) {
 			for (int x = 1; x < xSize; x++) {
-				SetVertex(v++, x, ySize, z);
+				SetVertex(v++, x , ySize , z );
 			}
 		}
 		//bottom
 		for (int z = 1; z < zSize; z++) {
 			for (int x = 1; x < xSize; x++) {
-				SetVertex(v++, x, 0, z);
+				SetVertex(v++, x , 0 , z);
 			}
 		}
 
 
 	}
 	private void SetVertex (int i, int x, int y, int z) {
-		Vector3 inner = vertices[i] = new Vector3(x, y, z);
+		Vector3 inner = vertices[i] = new Vector3(x, y , z );
 
 		////sides
-		if (x < roundness) {
+		if (x  < roundness) {
 			inner.x = roundness;
 		}
-		else if (x > xSize - roundness) {
+		else if (x  > xSize - roundness) {
 			inner.x = xSize - roundness;
 		}
 
 		////top and bottom
-		if (y < roundness) {
+		if (y  < roundness) {
 
 			// bottom rounder
-			inner.y = roundness - bottomChanger;
+			inner.y = roundness;
 		}
 		else if (y > ySize - roundness) 
 		{
 			// top rounder
-			inner.y = ySize - (roundness - topChanger);
+			inner.y = ySize - roundness ;
 		}
 
 		////front and back
@@ -1288,14 +1293,14 @@ public class CharacterMeshComplete : MonoBehaviour {
 		Destroy(boxCollider);
 		boxCollider = gameObject.AddComponent (typeof(BoxCollider)) as BoxCollider;
 
-		colliderCenterY = xSize / 2;
-		colliderCenterZ = ySize / 2;
+		colliderCenterY = 0;
+		colliderCenterZ = 0;
 
 		colliderSizeX = xSize;
 		colliderSizeY = ySize;
 		colliderSizeZ = zSize;
 
-		boxCollider.center = new Vector3( xSize/2, colliderCenterY, colliderCenterZ);
+		boxCollider.center = new Vector3( 0, colliderCenterY, colliderCenterZ);
 		boxCollider.size = new Vector3(colliderSizeX, colliderSizeY , colliderSizeZ );
 	}
 	private void UpdateCollider()
@@ -1306,23 +1311,23 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 		if ((moveState == "ball" && animateCount == 0) || (moveState == "car" && animateCount == 2)) { 
 			
-			colliderCenterY = Mathf.Lerp (colliderCenterY, ySize / 2, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, zSize / 2, lerping);
+			colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0, lerping);
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, xSize, lerping);
 			colliderSizeY = Mathf.Lerp (colliderSizeY, ySize, lerping);
 			colliderSizeZ = Mathf.Lerp (colliderSizeZ, zSize, lerping);
 
 		} else if ((moveState == "car" && animateCount == 1) || (moveState == "airplane" && animateCount == 3)) {
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 6, lerping );
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 5.5f, lerping );
+			colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping );
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping );
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, 8, lerping );
 			colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
 			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 13, lerping );
 		} else if ((moveState == "airplane" && animateCount == 2) || (moveState == "jet" && animateCount == 4)) {
 
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 1, lerping);
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, -4, lerping);
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
 			colliderSizeY = Mathf.Lerp (colliderSizeY, 8, lerping);
@@ -1330,8 +1335,8 @@ public class CharacterMeshComplete : MonoBehaviour {
 		
 		}else if ((moveState == "jet" && animateCount == 3) || (moveState == "nasa" && animateCount == 5))
 		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 6, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 3.5f, lerping);
+			colliderCenterY = Mathf.Lerp (colliderCenterY, 1, lerping);
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, -1.5f, lerping);
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, 14, lerping);
 			colliderSizeY = Mathf.Lerp (colliderSizeY, 5, lerping);
@@ -1340,8 +1345,8 @@ public class CharacterMeshComplete : MonoBehaviour {
 
 		}else if ((moveState == "nasa" && animateCount == 4) || (moveState == "rocket" && animateCount == 6))
 		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, 5.5f, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 5.5f, lerping);
+			colliderCenterY = Mathf.Lerp (colliderCenterY, 0.5f, lerping);
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, 20, lerping);
 			colliderSizeY = Mathf.Lerp (colliderSizeY, 4, lerping);
@@ -1349,15 +1354,15 @@ public class CharacterMeshComplete : MonoBehaviour {
 			
 		}else if ((moveState == "rocket" && animateCount == 5))
 		{
-			colliderCenterY = Mathf.Lerp (colliderCenterY, ySize/2, lerping);
-			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 5.5f, lerping);
+			colliderCenterY = Mathf.Lerp (colliderCenterY, 0, lerping);
+			colliderCenterZ = Mathf.Lerp (colliderCenterZ, 0.5f, lerping);
 
 			colliderSizeX = Mathf.Lerp (colliderSizeX, 7, lerping);
 			colliderSizeY = Mathf.Lerp (colliderSizeY, 2, lerping);
 			colliderSizeZ = Mathf.Lerp (colliderSizeZ, 9, lerping);
 		}
 
-		boxCollider.center = new Vector3(xSize/2, colliderCenterY, colliderCenterZ);
+		boxCollider.center = new Vector3(0, colliderCenterY, colliderCenterZ);
 		boxCollider.size = new Vector3(colliderSizeX, colliderSizeY , colliderSizeZ );
 	}
 
@@ -1372,13 +1377,14 @@ public class CharacterMeshComplete : MonoBehaviour {
 	private void UpdateTexture(){
 
 
+		float duration = 6.0f;
 
 		if (disolveState) {
 
 			if (disolveLerpState) {
-				disolveLerp += Time.deltaTime * (1.0f / 10.0f);
+				disolveLerp += Time.deltaTime * (1.0f / duration);
 			} else {
-				disolveLerp -= Time.deltaTime * (1.0f / 10.0f);
+				disolveLerp -= Time.deltaTime * (1.0f / duration);
 			}
 
 			if (disolveLerp > 1.0f) {
@@ -1408,7 +1414,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 				disolveState = false;
 			}
 
-			print ("turn count:  " + turnCount + "   count: " + disolveLerp);
+			//print ("turn count:  " + turnCount + "   count: " + disolveLerp);
 
 
 
