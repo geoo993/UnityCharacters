@@ -11,26 +11,37 @@ public class GenerateCity : MonoBehaviour {
 	private RaycastHit hit;
 	private GameObject hitObject = null;
 
-	private float buildLimit = 200.0f;
-	private float stretcher = 5f;
+	[Range(2f,10f)] public float stretcher = 5f;
+	[Range(2f,10f)] public float buildingsExtrusion = 5f;
 
-	private Color topGradCol = Color.white;
-	private Color botGradCol = Color.black;
+	public Color buildingsTopColor = Color.white;
+	private Color buildingsBottomColor = Color.black;
 
 	public GameObject sphere = null;
-	[Range(10,40)] public int minSize = 10;
+	[Range(10,50)] public int minSize = 10;
 	[Range(100,1000)] public int mapWidth = 200;
 	[Range(100,1000)] public int mapHeight = 200;
 
+	[Range(1,20)] public int buildingsFrequency = 10;
+	[Range(200f,600f)] public float buildingsLimit = 600.0f;
+
+	[Range(0, 50)] public int buildingsMinHeight = 10;
+	[Range(10, 100)] public int buildingsMaxHeight = 60;
+
+	private List<GameObject> buildings = new List<GameObject>();
 	private List<GameObject> areas = new List<GameObject>();
 	private List<GameObject> areasIndexDelete = new List<GameObject>();
 	private List<Vector3> edgePoints = new List<Vector3>();
 	private List<Vector3> mapEdgePoints = new List<Vector3>();
 
-	private int xSize, ySize, zSize, roundness, gameObjectCount ;
-	private bool roundTop,  roundFront, roundBack, roundSides = false;
-	private List <Vector3> verticesCopy = new List<Vector3> ();
+	private int xSize, ySize, zSize, gameObjectCount ;
+	public int roundness = 4;
+	private bool roundTop = false;
+	public bool  roundFront, roundBack, roundSides = false;
 
+	public bool addTexture = false;
+
+	private List <Vector3> verticesCopy = new List<Vector3> ();
 	private List<int[]> controlPoints = new List<int[]>();
 	private List<int> listOfVerticesIndexes = new List<int>();
 	private List<int> pivotControlPoint= new List<int>();
@@ -42,6 +53,8 @@ public class GenerateCity : MonoBehaviour {
 	private List<Vector3> normals = new List<Vector3>();
 	private List<Vector2> uv = new List<Vector2>();
 	private int[] triangles; 
+
+
 
 	private static int
 	SetQuad (int[] triangles, int i, int v00, int v10, int v01, int v11) {
@@ -90,6 +103,9 @@ public class GenerateCity : MonoBehaviour {
 			}
 		}
 
+
+		UpdateColor ();
+
 	}
 
 
@@ -124,7 +140,7 @@ public class GenerateCity : MonoBehaviour {
 			//yield return wait;
 		}
 
-		Debug.Log ("all Areas: "+areas.Count +"   toDeleted: "+areasIndexDelete.Count);
+		//Debug.Log ("all Areas: "+areas.Count +"   toDeleted: "+areasIndexDelete.Count);
 
 
 		for (int j = 0; j< areas.Count; j++) {
@@ -139,7 +155,7 @@ public class GenerateCity : MonoBehaviour {
 			}
 		}
 
-		Debug.Log ("areas: "+areas.Count);
+		//Debug.Log ("areas: "+areas.Count);
 
 		yield return wait;
 
@@ -151,8 +167,8 @@ public class GenerateCity : MonoBehaviour {
 
 		yield return wait;
 
-		print("map edges: "+mapEdgePoints.Count);
-		print ("areas edges: " + edgePoints.Count);
+		//print("map edges: "+mapEdgePoints.Count);
+		//print ("areas edges: " + edgePoints.Count);
 
 		for (int i = 0; i < areas.Count; i++) {
 
@@ -174,29 +190,29 @@ public class GenerateCity : MonoBehaviour {
 
 
 			roundTop = (Random.Range (0, 2) == 0);
-			roundFront = (Random.Range (0, 2) == 0);
-			roundBack = (Random.Range (0, 2) == 0);
-			roundSides = (Random.Range (0, 2) == 0);
+//			roundFront = (Random.Range (0, 2) == 0);
+//			roundBack = (Random.Range (0, 2) == 0);
+//			roundSides = (Random.Range (0, 2) == 0);
+//
+//			int maxRounder = 0;
+//			for (int r = 0; r < 20; r++) {
+//			
+//				if (maxRounder < xSize && maxRounder < zSize && maxRounder < 5) {
+//					maxRounder++;
+//				}
+//			}
+			//roundness = Random.Range (0, maxRounder);
 
-			int maxRounder = 0;
-			for (int r = 0; r < 20; r++) {
-			
-				if (maxRounder < xSize && maxRounder < zSize && maxRounder < 5) {
-					maxRounder++;
-				}
-			}
-			roundness = Random.Range (0, maxRounder);
+			//print ("top: " + roundTop + "    front: " + roundFront + "   back: " + roundBack + "   sides: " + roundSides);
+			//print ("x: " + xSize + "    y: " + ySize + "   z: " + zSize + "   roundness: " + roundness);
 
-			print ("top: " + roundTop + "    front: " + roundFront + "   back: " + roundBack + "   sides: " + roundSides);
-			print ("x: " + xSize + "    y: " + ySize + "   z: " + zSize + "   roundness: " + roundness);
+			if (distanceToCenter < buildingsLimit) {
 
-			if (distanceToCenter < buildLimit) {
-
-				int splitSize = (int)buildLimit / 8;
+				int splitSize = (int)buildingsLimit / buildingsFrequency;
 
 				if (xSize > splitSize || zSize > splitSize) {
 
-					print ("over than split size");
+					//print ("over than split size");
 
 					int xCount = 1;
 					while (xSize / xCount > splitSize) {
@@ -205,7 +221,7 @@ public class GenerateCity : MonoBehaviour {
 						xCount++;
 					}
 					float xOffset = xSize / xCount;
-					print ("x Offset: " + xOffset + "   x count: " + xCount);
+					//print ("x Offset: " + xOffset + "   x count: " + xCount);
 
 
 					int zCount = 1;
@@ -215,7 +231,7 @@ public class GenerateCity : MonoBehaviour {
 					}
 					float zOffset = zSize / zCount;
 
-					print ("z Offset: " + zOffset + "   z count: " + zCount);
+					//print ("z Offset: " + zOffset + "   z count: " + zCount);
 
 					List<Vector3> pointsInArea = new List<Vector3> ();
 					for (int s = 0; s < xCount; s++) {
@@ -239,24 +255,24 @@ public class GenerateCity : MonoBehaviour {
 
 					for (int o = 0; o < pointsInArea.Count; o++) {
 
-						ySize = Random.Range(10,20) + ((int)distanceToMapEdge / 4);
-						print ("xSize:  " + xSize + "   ySize: " + ySize + "   zSize  " + zSize);
+						ySize = Random.Range(buildingsMinHeight,buildingsMaxHeight) + ((int)distanceToMapEdge / 4);
+						//print ("xSize:  " + xSize + "   ySize: " + ySize + "   zSize  " + zSize);
 
 						Vector3 buildingPos1 = new Vector3 (pointsInArea [o].x + (stretcher / 2), transform.localPosition.y, pointsInArea [o].z + (stretcher / 2));
 						getBuilding ("building" + i, buildingPos1);
 					}
 
-					print ("point in area: " + pointsInArea.Count);
+					//print ("point in area: " + pointsInArea.Count);
 
 				} else {
 					
 					xSize -= (int)stretcher;
-					ySize = Random.Range(10,20) + ((int)distanceToMapEdge / 4);
+					ySize = Random.Range(buildingsMinHeight,buildingsMaxHeight) + ((int)distanceToMapEdge / 4);
 					zSize -= (int)stretcher;
 
-					print ("xSize:  " + xSize + "   ySize: " + ySize + "   zSize  " + zSize);
+					//print ("xSize:  " + xSize + "   ySize: " + ySize + "   zSize  " + zSize);
 
-					Vector3 buildingPos2 = new Vector3 (pivotPoint.x + (stretcher / 2), this.transform.position.y, pivotPoint.z + (stretcher / 3));
+					Vector3 buildingPos2 = new Vector3 (pivotPoint.x + (stretcher / 2), this.transform.position.y, pivotPoint.z + (stretcher / 2));
 
 
 					getBuilding ("building" + i, buildingPos2);
@@ -267,13 +283,19 @@ public class GenerateCity : MonoBehaviour {
 		}
 		yield return wait;
 
-		for (int i = 0; i < areas.Count; i++) {
-			areas [i].GetComponent<MeshRenderer> ().material.color = Color.clear;//Color.black;
-		}
-
 
 	}
 
+	void UpdateColor (){
+
+		buildingsBottomColor = mainCamera.gameObject.GetComponent<Skybox> ().bc;
+
+		for (int i = 0; i < areas.Count; i++) {
+			areas [i].GetComponent<MeshRenderer> ().material.color = buildingsBottomColor;//Color.clear;//Color.black;
+		}
+		UpdateTextureColor ();
+
+	}
 	private GameObject createSphere(Vector3 pos ){
 
 		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
@@ -290,6 +312,7 @@ public class GenerateCity : MonoBehaviour {
 		building.transform.parent = this.transform;
 		building.name = name;
 		building.transform.localScale = new Vector3 (Random.Range (0.4f, 0.7f), 1f, Random.Range (0.4f, 0.7f));
+		buildings.Add (building);
 	}
 
 
@@ -611,7 +634,7 @@ public class GenerateCity : MonoBehaviour {
 		////front calcutations
 		int fFromLoop = Random.Range (0, frontControlPointIndexes.Count - 1);
 		int fToLoop = Mathf.Clamp (Random.Range (fFromLoop, frontControlPointIndexes.Count - 1), 0, frontControlPointIndexes.Count - 1);
-		float fRandOffset = Random.Range (-stretcher, stretcher);
+		float fRandOffset = Random.Range (-stretcher, stretcher) + buildingsExtrusion;
 
 		//print ("front from: " + fFromLoop + "   front too: " + fToLoop + "   all front:" + frontControlPointIndexes.Count);
 
@@ -634,7 +657,7 @@ public class GenerateCity : MonoBehaviour {
 		////back calcutations
 		int bFrom = Random.Range (0, backControlPointIndexes.Count - 1);
 		int bTo = Mathf.Clamp (Random.Range (bFrom, backControlPointIndexes.Count - 1), 0, backControlPointIndexes.Count - 1);
-		float bRandOffset = Random.Range (-stretcher, stretcher);
+		float bRandOffset = Random.Range (-stretcher, stretcher) + buildingsExtrusion;
 
 		//print ("back from: " + bFrom + "   back too: " + bTo + "   all backs:" + backControlPointIndexes.Count);
 
@@ -659,7 +682,7 @@ public class GenerateCity : MonoBehaviour {
 		int sTo = 0;
 		int sFrom2 = 0;
 		int sTo2 = 0;
-		float sRandOffset = Random.Range (-stretcher, stretcher);
+		float sRandOffset = Random.Range (-stretcher, stretcher) + buildingsExtrusion;
 
 		switch (sType) {
 
@@ -955,15 +978,15 @@ public class GenerateCity : MonoBehaviour {
 	private void CreateColorAndtexture(MeshRenderer mR) {
 
 		////type1
-		Material material = new Material (Shader.Find (".ShaderExample/TextureSplatting"));
-		Texture[] smallStripes = new Texture[] {
-			//			Resources.Load ("TextureStripe7") as Texture,
-			//			Resources.Load ("TextureStripe8") as Texture,
-			//			Resources.Load ("TextureStripe9") as Texture,
-			Resources.Load ("TextureStripe2") as Texture
-
-		};
-		int pickSmallStripes = (int)Mathf.Floor (Random.value * smallStripes.Length);
+		//Material material = new Material (Shader.Find (".ShaderExample/TextureSplatting"));
+//		Texture[] smallStripes = new Texture[] {
+//			Resources.Load ("TextureStripe7") as Texture,
+//			Resources.Load ("TextureStripe8") as Texture,
+//			Resources.Load ("TextureStripe9") as Texture,
+//			Resources.Load ("TextureStripe2") as Texture
+//
+//		};
+//		int pickSmallStripes = (int)Mathf.Floor (Random.value * smallStripes.Length);
 
 
 //		Texture[] bigStripes = new Texture[] {
@@ -987,9 +1010,20 @@ public class GenerateCity : MonoBehaviour {
 //		};
 //		int pickbigStripesInverted = (int)Mathf.Floor (Random.value * bigStripesInverted.Length);
 
-		Texture small = smallStripes [pickSmallStripes] as Texture;
+		Texture[] Others = new Texture[] {
+
+//			Resources.Load ("Tiles") as Texture,
+//			Resources.Load ("GridPattern") as Texture,
+//			Resources.Load ("GridSample") as Texture,
+			Resources.Load ("GrungeGridBlackAndRedTextureVector") as Texture
+		};
+		int pickOthers = (int)Mathf.Floor (Random.value * Others.Length);
+
+//		Texture small = smallStripes [pickSmallStripes] as Texture;
 //		Texture big = bigStripes [pickBigStripes] as Texture;
 //		Texture inverted = bigStripesInverted [pickbigStripesInverted] as Texture;
+		Texture other = Others [pickOthers] as Texture;
+
 
 //
 //		material.SetTexture ("_Texture1", small);
@@ -1037,15 +1071,24 @@ public class GenerateCity : MonoBehaviour {
 
 		////type5
 		Material mat = new Material (Shader.Find (".ShaderExample/GradientThreeColor(Texture)"));
-		mat.SetTexture ("_MainTex", small);
-		mat.SetColor ("_ColorTop", topGradCol);
-		mat.SetColor ("_ColorMid", topGradCol);
-		mat.SetColor ("_ColorBot", botGradCol);
+		mat.SetTexture ("_MainTex", other);
+		mat.SetColor ("_ColorTop", buildingsTopColor);
+		mat.SetColor ("_ColorMid", buildingsTopColor);
+		mat.SetColor ("_ColorBot", buildingsBottomColor);
 		mat.SetFloat ("_Middle", Random.Range(0.2f,0.6f));
 		mR.material = mat;
 
 	}
+	private void UpdateTextureColor(){
 
+		foreach (GameObject building in buildings) {
+			building.GetComponent<MeshRenderer> ().material.SetColor ("_ColorTop", buildingsTopColor);
+			building.GetComponent<MeshRenderer> ().material.SetColor ("_ColorMid", buildingsTopColor);
+			building.GetComponent<MeshRenderer> ().material.SetColor ("_ColorBot", buildingsBottomColor);
+
+			building.GetComponent<MeshRenderer> ().material.mainTexture = addTexture ? Resources.Load ("Tiles") as Texture : null;
+		}
+	}
 
 	
 }

@@ -75,7 +75,7 @@ public class CharacterMeshComplete : MonoBehaviour {
 		a.transform.position = pos;
 		//GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
 		a.name = "Cube" + Id;
-		//a.transform.localScale = Vector3.zero; //new Vector3 (0.4f, 0.4f, 0.4f);
+		a.transform.localScale =  new Vector3 (0.4f, 0.4f, 0.4f);  //Vector3.zero;
 		//a.GetComponent<Renderer> ().material.color = Color.red;
 		a.transform.parent = this.transform;
 		Arr.Add (a);

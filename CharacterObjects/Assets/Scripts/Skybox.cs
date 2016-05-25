@@ -3,7 +3,29 @@ using System.Collections;
 
 public class Skybox : MonoBehaviour {
 
-	Camera camera;
+	private Camera camera;
+
+	public Color topColor = Color.blue;
+	public Color midColor = Color.blue;
+	public Color bottomColor = Color.blue;
+
+	public bool lerpTopColor = false;
+	public bool lerpMidColor = false;
+	public bool lerpBottomColor = false;
+
+	[HideInInspector] public Color tc;
+	[HideInInspector] public Color bc; 
+	[HideInInspector] public Color mc;
+
+	public Texture2D[] textures;
+
+	private int resolution = 256;
+	private float duration = 10.0f;
+	private Color CurrentColor =  Color.red;
+	private Color previousColor = Color.blue;
+	private float t = 0;
+
+
 
 	public static Material CreateSkyboxMaterial(SkyboxManifest manifest)
 	{
@@ -26,14 +48,6 @@ public class Skybox : MonoBehaviour {
 		result.SetColor("_ColorBot", bottomColor);
 		return result;
 	}
-
-	public Texture2D[] textures;
-
-	private int resolution = 256;
-	private float duration = 10.0f;
-	private Color CurrentColor =  Color.red;
-	private Color previousColor = Color.blue;
-	private float t = 0;
 
 	private Gradient addGradient ()
 	{
@@ -96,11 +110,15 @@ public class Skybox : MonoBehaviour {
 			CurrentColor = previousColor;
 			previousColor = ExtensionMethods.RandomColor ();
 		}
-		Color one = Color.Lerp (CurrentColor,previousColor, t) / 2.0f;
+		Color lerp = Color.Lerp (CurrentColor,previousColor, t) / 2.0f;
 
 		//print("time: "+t+" duration:  "+ duration);
 
-		Material material = CreateGradientMaterial(one,one,Color.black);
+		tc = lerpTopColor ? lerp : topColor;
+		mc = lerpMidColor ? lerp : midColor;
+		bc = lerpBottomColor ? lerp : bottomColor;
+
+		Material material = CreateGradientMaterial(tc,mc,bc);
 		SetSkybox(material);
 		//enabled = false;
 
