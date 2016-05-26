@@ -13,6 +13,7 @@ public class RadarObject {
 public class Radar : MonoBehaviour {
 
 	public Transform playerPos;
+	public Transform arrow;
 	private float mapScale = 2.0f;
 
 	public static List<RadarObject> radarObjects = new List<RadarObject> ();
@@ -62,6 +63,7 @@ public class Radar : MonoBehaviour {
 			radObj.icon.transform.position = new Vector3 (radarPos.x,radarPos.z, 0.0f) + this.transform.position;
 
 		}
+
 
 	}
 

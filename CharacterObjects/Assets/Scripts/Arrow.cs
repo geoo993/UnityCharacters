@@ -28,12 +28,25 @@ public class Arrow : MonoBehaviour {
 		float dist = Vector3.Distance (movingObject.transform.position, targetObject.transform.position);
 
 		col = Color.Lerp (closestToTarget, farFromTarget, dist / range);
-		this.transform.LookAt (movingObject.transform);
+
+		//this.transform.LookAt (movingObject.transform);
 
 		foreach (GameObject arrow in arrowParts) 
 		{
 			arrow.GetComponent<MeshRenderer> ().material.SetColor ("_Color", col);
 		}
+
+
+//		Vector3 lookPos = movingObject.transform.position - transform.position;
+//		lookPos.y = 0.0f;
+//		Quaternion rotation = Quaternion.LookRotation(lookPos);
+//		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2.0f); 
+//
+
+		Vector3 targetPoint = movingObject.transform.position;
+		Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position, Vector3.up);
+		transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.0f); 
+
 
 	}
 
