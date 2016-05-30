@@ -9,7 +9,6 @@ public class Player : MonoBehaviour {
 
 	[Range(200.0f, 1000f)] public float ballSpeed = 50.0f;
 
-	public Camera cam;
 	private Rigidbody rigid;
 
 

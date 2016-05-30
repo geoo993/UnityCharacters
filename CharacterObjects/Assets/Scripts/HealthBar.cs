@@ -33,8 +33,9 @@ public class HealthBar : MonoBehaviour {
 
 		if (health <= 0) 
 		{
-			player.GetComponent<Player> ().speed = 0.0f;
-			player.GetComponent<Player> ().rotateSpeed = 0.0f;
+			health = 100;
+			//player.GetComponent<Player> ().speed = 0.0f;
+			//player.GetComponent<Player> ().rotateSpeed = 0.0f;
 		}
 
 	}
