@@ -35,13 +35,13 @@ public class CameraTracker : MonoBehaviour {
 
 	void LateUpdate () {
 
-		if (craftMovement.ballState == true) {
-			
-			FollowTargetWhenRolling ();
-
-		} else {
+//		if (craftMovement.ballState == true) {
+//			
+//			FollowTargetWhenRolling ();
+//
+//		} else {
 			FollowTarget ();
-		}
+	//	}
 
 	}
 

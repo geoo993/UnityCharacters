@@ -68,7 +68,7 @@ public class CharacterMesh : MonoBehaviour {
 	private GameObject createSphere(Vector3 pos , List <GameObject> Arr, int Id){
 
 		GameObject a = (GameObject) Instantiate(sphere, pos, Quaternion.identity);
-		a.name = "Cube" + Id;
+		a.name = "Sphere" + Id;
 		a.transform.localScale = new Vector3 (0.4f, 0.4f, 0.4f);
 		a.GetComponent<Renderer> ().material.color = Color.red;
 		a.transform.parent = this.transform;

@@ -3,110 +3,60 @@ using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
 
-	public Transform player = null;
+	// The target we are following
 	public Transform target = null;
 
-	[Range(-50.0f, 50.0f)]public float distanceUP, distanceBack, minimumHeight =  1.0f;
-	public Vector3 speed =  new Vector3 (3.0f, 5.0f, 2.0f);
+	// The distance in the x-z pos to the target
+	public float distance = 10.0f;
 
+	// the height we want the camera to be above the target
+	public float height = 10.0f;
+	public float heightDamping = 2.0f;
+	public float rotationDamping = 0.6f;
 
-	private Vector3 cameraOriginalPosition = Vector3.zero;
-	private Vector3 nextPosition = Vector3.zero;
-
-	private float distance = 40.0f; //10.0f;
-	private float height = 5.0f; //5.0f;
-	
-	private float heightDamping = 4.0f;  //2.0f;
-	private float rotationDamping = 3.0f;
-
-	private Vector3 offset;
-
-	void Awake ()
+	void LateUpdate ()
 	{
-		cameraOriginalPosition = this.transform.position;
-
-		transform.position = lookTargetFromBehind();
-		offset = transform.position - target.position ;
-
+		FollowTarget ();
+		LookAtTarget ();
 	}
 
-	void FixedUpdate ()
-	{
-		//FollowTargetWhenRolling ();
-
-		FollowPlaneTarget();  
-		LookAtPlane(); 
-
-	}
-
-	private Vector3 lookTargetFromBehind()
-	{
-		////calculate a new position to place the camera:
-		Vector3 newPosition =  target.position + (target.forward * distanceBack);
-		float newPosY = Mathf.Max (newPosition.y + distanceUP, minimumHeight);
-		newPosition = new Vector3(newPosition.x, newPosY, newPosition.z);
-
-		return newPosition;
-
-	}
-
-	void FollowTargetWhenRolling ()
+	void  FollowTarget()
 	{
 
-		transform.position = target.position + offset ;
-		transform.LookAt (transform.position);
+		// Early out if we don't have a target
+		if (!target)
+			return;
 
-		float movement = Input.GetAxis ("Horizontal2") * 20f * Time.deltaTime;
-		if(!Mathf.Approximately (movement, 0f)) {
-			transform.RotateAround (target.position, Vector3.up, movement);
-			offset = transform.position - target.position ;
-		}
-
-
-
-	}
-
-	void FollowPlaneTarget ()
-	{
-		//plane
+		// Calculate the current rotation angles
 		float wantedRotationAngle = target.eulerAngles.y;
 		float wantedHeight = target.position.y + height;
-		
 		float currentRotationAngle = transform.eulerAngles.y;
 		float currentHeight = transform.position.y;
-		
+
+		// Damp the rotation around the y-axis
 		currentRotationAngle = Mathf.LerpAngle (currentRotationAngle, wantedRotationAngle, rotationDamping * Time.deltaTime);
+
+		// Damp the height
 		currentHeight = Mathf.Lerp (currentHeight, wantedHeight, heightDamping * Time.deltaTime);
-		
-		Quaternion currentRotation = Quaternion.Euler (0.0f, currentRotationAngle, 0.0f);
-		
+
+		// Convert the angle into a rotation
+		Quaternion currentRotation = Quaternion.Euler (0, currentRotationAngle, 0);
+
+		// Set the position of the camera on the x-z plane to:
+		// distance meters behind the target
 		transform.position = target.position;
 		transform.position -= currentRotation * Vector3.forward * distance;
-		
-		transform.position = new Vector3(target.position.x, currentHeight, target.position.z);
 
-
-		//		nextPosition.x = Mathf.Lerp (transform.position.x, target.position.x, speed.x * Time.deltaTime);
-		//		nextPosition.y = Mathf.Lerp (transform.position.y, target.position.y, speed.y * Time.deltaTime);
-		//		nextPosition.z = Mathf.Lerp (transform.position.z, target.position.z, speed.z * Time.deltaTime);
-//		
-//		transform.position = nextPosition;
-	}
-
-
-
-	void LookAtPlane ()
-	{
-		this.transform.LookAt (player.position);
+		// Set the height of the camera
+		transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
 
 	}
 
+	void LookAtTarget(){
 
-	void CameraFirstPosition ()
-	{
-		this.transform.position = cameraOriginalPosition;
+		// Always look at the target
+		transform.LookAt (target);
 	}
-
 
 
 
