@@ -54,6 +54,7 @@ public class CharacterMovement : MonoBehaviour
 
 			Vector3 scale = new Vector3 (Random.Range (1.0f, 10.0f), Random.Range (1.0f, 10.0f), Random.Range (1.0f, 10.0f));
 			a.transform.localScale = scale;
+			a.transform.parent = this.transform;
 		}
 	
 	}
