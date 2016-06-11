@@ -72,6 +72,7 @@ public class ExplosionMat : MonoBehaviour {
 	}
 	
 	public void UpdateShaderProperties() {
+		
 		Material rsm = GetComponent<Renderer>().sharedMaterial;
 		rsm.SetTexture("_RampTex", _ramp);
 		rsm.SetTexture("_MainTex", _noise);
