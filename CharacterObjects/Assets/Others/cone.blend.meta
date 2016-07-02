@@ -3,8 +3,20 @@ guid: 0a28255bbd112983d000f80b25bb6539
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
+    100000: //RootNode
+    100002: Cube
+    100004: Cylinder
+    400000: //RootNode
+    400002: Cube
+    400004: Cylinder
+    2300000: Cube
+    2300002: Cylinder
+    3300000: Cube
+    3300002: Cylinder
     4300000: Cube
     4300002: Cylinder
+    7400000: Default Take
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 3
