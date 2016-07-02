@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/ShadersAnimations.unity
+- path: Assets/Scenes/HoveringCraft.unity
   isLoaded: 1
   isActive: 1
